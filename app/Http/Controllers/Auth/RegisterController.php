@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Session;
 
 class RegisterController extends Controller
 {
@@ -75,15 +76,17 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
 
-        // $image_uploaded = null;
         if ($data['image']) {
             $image_uploaded = Cloudinary::upload($data['image']->getRealPath())->getSecurePath();
         }
-        // dd($image_uploaded);
 
-        // dd($data['image']->getRealPath());
-
-        return User::create([
+        if ($data['type'] == 'admin' || $data['type'] == 'korisnik') {
+            $verified = true;
+        } else {
+            $verified = false;
+        }
+        // dd(session('success'));
+        User::create([
             'name' => $data['name'],
             'surname' => $data['surname'],
             'email' => $data['email'],
@@ -96,6 +99,16 @@ class RegisterController extends Controller
             'jmbg' => $data['jmbg'],
             'image' => $image_uploaded ?? null,
             'type' => $data['type'],
+            'verified' => $verified,
         ]);
+
+        // Flash the success message
+        Session::flash('success', 'You have successfully registered! Now, you must wait for the Admin to approve your registration request');
+
+        // Redirect to the login page with the flash message
+        return redirect('/login')->with('success', session('success'));
+
+        // Authenticate the user manually
+        Auth::login($user);
     }
 }

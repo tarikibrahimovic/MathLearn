@@ -17,6 +17,8 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
+     protected $primaryKey = 'jmbg';
     protected $fillable = [
         'name',
         'surname',
@@ -30,6 +32,7 @@ class User extends Authenticatable
         'jmbg',
         'image',
         'type',
+        'verified',
     ];
 
     /**
