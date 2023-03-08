@@ -8,15 +8,22 @@
 
                 <div class="card-header">{{ __('Login') }}</div>
 
+                @if(session('message'))
+                <div class="alert alert-success">
+                    {{ session('message') }}
+                </div>
+                @endif
+
+                @if ($errors->has('error'))
+                <div class="alert alert-danger">
+                    {{ $errors->first('error') }}
+                </div>
+                @endif
+
+
                 <div class="card-body">
                     <form method="POST" action="{{ route('login') }}">
                         @csrf
-                        <!-- {{ dd(session('success')) }} -->
-                        <!-- @if (session('success'))
-                        <div class="alert alert-success" role="alert">
-                            {{ session('success') }}
-                        </div>
-                        @endif -->
                         <div class="row mb-3">
                             <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
 

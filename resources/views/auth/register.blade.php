@@ -155,7 +155,6 @@
                                 @enderror
                             </div>
                         </div>
-                        <!-- datum rodjenja, mesto rodjenja, email, password, password confirm, jmbg, broj telefona, slika, tip korisnika -->
 
                         <div class="row mb-3">
                             <label for="image" class="col-md-4 col-form-label text-md-end">{{ __('Slika') }}</label>
@@ -186,7 +185,9 @@
                                         <label for="predavac">Predavac</label>
                                     </div>
                                     <input type="radio" id="predavac" value='predavac' name="type">
+                                    <!-- if selected value is predavac than show a message -->
                                 </div>
+                                <p class="text-danger">*Ukoliko ste predavac, morate sacekati odobrenje od strane admina</p>
 
                             </div>
 
@@ -202,12 +203,13 @@
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Registruj se') }}
                                 </button>
-                            </div>  
-
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 @endsection

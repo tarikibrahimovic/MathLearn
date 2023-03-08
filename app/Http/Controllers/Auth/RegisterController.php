@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Auth\AuthenticationException;
 
 class RegisterController extends Controller
 {
@@ -76,8 +78,12 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
 
+        $storedImage = $data['image']->store('images', 'public');
+
         if ($data['image']) {
-            $image_uploaded = Cloudinary::upload($data['image']->getRealPath())->getSecurePath();
+            $image_uploaded = Cloudinary::upload(public_path("storage/{$storedImage}"))->getSecurePath();
+            //remove image from local storage
+            unlink(public_path("storage/{$storedImage}"));
         }
 
         if ($data['type'] == 'admin' || $data['type'] == 'korisnik') {
@@ -85,7 +91,9 @@ class RegisterController extends Controller
         } else {
             $verified = false;
         }
-        // dd(session('success'));
+        
+        Session::flash('message', 'Uspesno ste se registrovali, cekajte admina!');
+
         User::create([
             'name' => $data['name'],
             'surname' => $data['surname'],
@@ -102,13 +110,14 @@ class RegisterController extends Controller
             'verified' => $verified,
         ]);
 
-        // Flash the success message
-        Session::flash('success', 'You have successfully registered! Now, you must wait for the Admin to approve your registration request');
+        $lastUser = User::latest()->first();
 
-        // Redirect to the login page with the flash message
-        return redirect('/login')->with('success', session('success'));
+        if ($lastUser->type == 'predavac') {
+            event(new Registered($lastUser));
+            throw new AuthenticationException();
+        }
 
-        // Authenticate the user manually
-        Auth::login($user);
+        return $lastUser;
+
     }
 }
