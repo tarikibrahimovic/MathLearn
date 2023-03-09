@@ -11,7 +11,8 @@ class AdminController extends Controller
     //
     public function index()
     {
-        $users = User::where('verified', 0)->get();
+        // $users = User::where('verified', 0)->get();
+        $users = User::all();
         return view('admin.adminApproving', compact('users'));
     }
 

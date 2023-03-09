@@ -9,6 +9,7 @@ class TeachersController extends Controller
     //
     public function index()
     {
-        return view('teacher.teacher');
+        $courses = auth()->user()->courses;
+        return view('teacher.teacher')->with('courses', $courses);
     }
 }

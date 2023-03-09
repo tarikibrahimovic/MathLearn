@@ -31,5 +31,8 @@ Route::middleware(['type:admin'])->group(function () {
 
 Route::middleware(['type:predavac'])->group(function () {
     Route::get('/teacher', [App\Http\Controllers\TeachersController::class, 'index'])->name('teacher.index');
+    Route::get('/teacher/courses/create', [App\Http\Controllers\CoursesController::class, 'create'])->name('courses.create');
+    Route::post('/teacher/courses', [App\Http\Controllers\CoursesController::class, 'store'])->name('courses.store');
+
 });
 
