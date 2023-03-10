@@ -18,7 +18,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
 
-     protected $primaryKey = 'jmbg';
+    protected $primaryKey = 'jmbg';
     protected $fillable = [
         'name',
         'surname',
@@ -59,7 +59,17 @@ class User extends Authenticatable
         return $this->type == $role;
     }
 
-    public function courses(){
+    public function courses()
+    {
         return $this->hasMany(Courses::class, 'user_id', 'jmbg');
+    }
+
+    public function isTeacher($courseId)
+    {
+        $user = User::find(auth()->user()->jmbg);
+        if ($user->courses->contains($courseId)) {
+            return true;
+        }
+        return false;
     }
 }

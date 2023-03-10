@@ -18,6 +18,10 @@ class Courses extends Model
         'updated_at',
     ];
 
+    public function lesson(){
+        return $this->hasMany(Lessons::class);
+    }
+
     public function user(){
         return $this->belongsTo(User::class, 'user_id', 'jmbg');
     }
