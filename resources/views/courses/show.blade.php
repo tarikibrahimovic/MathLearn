@@ -29,5 +29,19 @@
         <button class="btn btn-primary">Edit</button>
     </form>
     @endif
+
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Lessons</h2>
+            <ul>
+                @foreach($course->lesson as $lesson)
+                <li>
+                    <a href="{{$lesson->file}}">{{$lesson->name}}</a>
+                </li>
+
+                @endforeach
+            </ul>
+        </div>
+    </div>
 </div>
 @endsection

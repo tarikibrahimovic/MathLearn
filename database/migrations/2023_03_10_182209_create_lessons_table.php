@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('description');
-            $table->foreignId('course_id')->constrained('courses');
+            $table->foreignId('course_id')->references('id')->on('courses');
             $table->string('file');
 
             $table->timestamps();

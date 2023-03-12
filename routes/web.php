@@ -36,6 +36,7 @@ Route::middleware(['type:predavac'])->group(function () {
     Route::get('/teacher/courses/{id}/edit', [App\Http\Controllers\CoursesController::class, 'edit'])->name('courses.edit');
     Route::put('/teacher/courses/{id}/update', [App\Http\Controllers\CoursesController::class, 'update'])->name('courses.update');
     
+    
 });
 
 

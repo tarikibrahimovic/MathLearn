@@ -40,19 +40,27 @@ class CoursesController extends Controller
             'description' => '',
             'image' => 'image',
             'fileName' => '',
-            // 'files' => 'file',
             'fileDesc' => '',
         ]);
+        
         $course = Courses::find(request('id'));
 
-        $course->name = $data['name'] ?? $course->name;
-        $course->description = $data['description'] ?? $course->description;
-        if (request('image')) {
-            $imagePath = request('image')->store('uploads', 'public');
-            $image_stored = Cloudinary::upload(public_path("storage/{$imagePath}"))->getSecurePath();
-            $course->image = $image_stored;
+        dd($course->lesson);
+
+        if (auth()->user()->jmbg !== (int)$course->user_id) {
+            return redirect('/');
         }
-        $course->save();
+    
+            $course->name = $data['name'] ?? $course->name;
+            $course->description = $data['description'] ?? $course->description;
+            if (request('image')) {
+                $imagePath = request('image')->store('uploads', 'public');
+                $image_stored = Cloudinary::upload(public_path("storage/{$imagePath}"))->getSecurePath();
+                unlink(public_path("storage/{$imagePath}"));
+                $course->image = $image_stored;
+            }
+            $course->save();
+
 
         if (request('files') && $data['fileName'] && $data['fileDesc']) {
             foreach (request('files') as $file) {
@@ -61,12 +69,15 @@ class CoursesController extends Controller
                 $lesson->description = $data['fileDesc'];
                 $lesson->course_id = $course->id;
                 $lessonPath = $file->store('uploads', 'public');
-                $lesson_stored = Cloudinary::upload(public_path("storage/{$lessonPath}"))->getSecurePath();
+                $lesson_stored = Cloudinary::upload(public_path("storage/{$lessonPath}"),[
+                    'resource_type' => 'auto',
+                ])->getSecurePath();
                 $lesson->file = $lesson_stored;
                 $lesson->save();
             }
+            unlink(public_path("storage/{$lessonPath}"));
         }
-
+        
         Session::flash('message', 'Course updated successfully');
 
         return redirect('/teacher/courses/' . $course->id);
