@@ -72,4 +72,27 @@ class User extends Authenticatable
         }
         return false;
     }
+
+    public function isFollowing($course_id)
+    {
+        $user = User::find(auth()->user()->jmbg);
+        $follows = CoursesUser::where('user_jmbg', $user->jmbg)->where('courses_id', $course_id)->first();
+        if ($follows) {
+            return true;
+        }
+        return false;
+    }
+
+    public function isUser(){
+        $user = User::find(auth()->user()->jmbg);
+        if ($user->type == "korisnik"){
+            return true;
+        }
+        return false;
+    }
+
+    public function following(){
+        return $this->belongsToMany(Courses::class);
+    }
+
 }

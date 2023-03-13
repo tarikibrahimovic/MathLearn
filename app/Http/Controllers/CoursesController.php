@@ -45,8 +45,6 @@ class CoursesController extends Controller
         
         $course = Courses::find(request('id'));
 
-        dd($course->lesson);
-
         if (auth()->user()->jmbg !== (int)$course->user_id) {
             return redirect('/');
         }
@@ -104,5 +102,17 @@ class CoursesController extends Controller
         ]);
 
         return redirect('/teacher');
+    }
+
+    public function destroy()
+    {
+        $lesson = Lessons::find(request('id'));
+        if(auth()->user()->jmbg !== (int)$lesson->course->user_id){
+            return redirect('/');
+        }
+        $lesson->delete();
+
+        
+        return redirect()->back()->with('message', 'Lesson deleted successfully');
     }
 }

@@ -26,4 +26,9 @@ class Courses extends Model
     public function user(){
         return $this->belongsTo(User::class, 'user_id', 'jmbg');
     }
+
+    public function following(){
+        return $this->belongsToMany(User::class);
+    }
+
 }

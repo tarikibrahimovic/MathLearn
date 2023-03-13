@@ -35,8 +35,12 @@ Route::middleware(['type:predavac'])->group(function () {
     Route::post('/teacher/courses', [App\Http\Controllers\CoursesController::class, 'store'])->name('courses.store');
     Route::get('/teacher/courses/{id}/edit', [App\Http\Controllers\CoursesController::class, 'edit'])->name('courses.edit');
     Route::put('/teacher/courses/{id}/update', [App\Http\Controllers\CoursesController::class, 'update'])->name('courses.update');
-    
-    
+    Route::delete('/teacher/lesson/{id}', [App\Http\Controllers\CoursesController::class, 'destroy'])->name('lessons.destroy');
+});
+
+Route::middleware(['type:korisnik'])->group(function (){
+    Route::post('/follow/{course}', [App\Http\Controllers\FollowsController::class, 'store'])->name('follows.store');
+    Route::delete('/follow/{course}', [App\Http\Controllers\FollowsController::class, 'destroy'])->name('follows.destroy');
 });
 
 
