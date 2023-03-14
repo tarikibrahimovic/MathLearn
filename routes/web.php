@@ -21,8 +21,6 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-// if the type is admin then redirect to admin dashboard, if the type is user then redirect to user dashboard
-
 Route::middleware(['type:admin'])->group(function () {
     Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.index');
     Route::patch('/admin/{id}', [App\Http\Controllers\AdminController::class, 'update'])->name('admin.update');
@@ -36,6 +34,9 @@ Route::middleware(['type:predavac'])->group(function () {
     Route::get('/teacher/courses/{id}/edit', [App\Http\Controllers\CoursesController::class, 'edit'])->name('courses.edit');
     Route::put('/teacher/courses/{id}/update', [App\Http\Controllers\CoursesController::class, 'update'])->name('courses.update');
     Route::delete('/teacher/lesson/{id}', [App\Http\Controllers\CoursesController::class, 'destroy'])->name('lessons.destroy');
+    Route::post('/teacher/lesson/store/{id}', [App\Http\Controllers\CoursesController::class, 'storeLesson'])->name('lessons.store');
+    Route::get('/teacher/lesson/create/{id}', [App\Http\Controllers\CoursesController::class, 'createLesson'])->name('lessons.create');
+    Route::get('/teacher/followers/{id}', [App\Http\Controllers\FollowsController::class, 'show'])->name('follows.show');
 });
 
 Route::middleware(['type:korisnik'])->group(function (){

@@ -35,4 +35,17 @@ class FollowsController extends Controller
         $follows->delete();
         return redirect()->back()->with('message', 'You are no longer following this course');
     }
+
+    public function show(int $course_id){
+
+        $user = User::find(auth()->user()->jmbg);
+
+        if($user->isTeacher($course_id) == false){
+            return redirect()->back();
+        }
+
+        $followers = CoursesUser::where('courses_id', $course_id)->get();
+
+        return view('courses.showUsers', compact('followers'));
+    }
 }

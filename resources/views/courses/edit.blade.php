@@ -21,28 +21,6 @@
             <label for="image">Image</label>
             <input type="file" name="image" id="image" class="form-control">
         </div>
-
-
-        <div class="form-group my-5">
-            <h3>Add Files</h3>
-        </div>
-
-        <div class="form-group">
-            <label for="fileName">File name</label>
-            <input type="text" name="fileName" id="fileName" class="form-control">
-        </div>
-
-        <div class="form-group">
-            <label for="fileDesc">File description</label>
-            <input type="text" name="fileDesc" id="fileDesc" class="form-control">
-        </div>
-
-        <div class="form-group">
-            <label for="files">Add more Files</label>
-            <input type="file" name="files[]" id="files" class="form-control" multiple>
-        </div>
-
-        <button class="btn btn-primary">Save</button>
     </form>
 </div>
 @endsection

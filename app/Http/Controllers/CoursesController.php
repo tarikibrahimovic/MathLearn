@@ -36,11 +36,9 @@ class CoursesController extends Controller
     public function update()
     {
         $data = request()->validate([
-            'name' => '',
-            'description' => '',
-            'image' => 'image',
-            'fileName' => '',
-            'fileDesc' => '',
+            'name' => 'required',
+            'description' => 'required',
+            'image' => 'image|required',
         ]);
         
         $course = Courses::find(request('id'));
@@ -58,9 +56,37 @@ class CoursesController extends Controller
                 $course->image = $image_stored;
             }
             $course->save();
+        
+        Session::flash('message', 'Course updated successfully');
 
+        return redirect('/teacher/courses/' . $course->id);
+    }
 
-        if (request('files') && $data['fileName'] && $data['fileDesc']) {
+    public function createLesson()
+    {
+        $course = Courses::find(request('id'));
+        $user = auth()->user();
+        if(auth()->user()->type !== 'predavac' && auth()->user()->jmbg !== (int)$course->user_id){
+            return redirect('/');
+        }
+        // return view('lesson.create', compact('course'));
+        return view('lesson.create', compact('course', 'user'));
+    }
+
+    public function storeLesson(){
+        $data = request()->validate([
+            'fileName' => 'required',
+            'fileDesc' => 'required',
+            'files' => '',
+            'link' => ''
+        ]);
+
+        $course = Courses::find(request('id'));
+        if(auth()->user()->type !== 'predavac' && auth()->user()->jmbg !== (int)$course->user_id){
+            return redirect('/');
+        }
+
+        if ($data['files'] && $data['fileName'] && $data['fileDesc']) {
             foreach (request('files') as $file) {
                 $lesson = new Lessons();
                 $lesson->name = $data['fileName'];
@@ -75,10 +101,19 @@ class CoursesController extends Controller
             }
             unlink(public_path("storage/{$lessonPath}"));
         }
-        
-        Session::flash('message', 'Course updated successfully');
+        else if ($data['link'] && $data['fileName'] && $data['fileDesc']) {
+            $lesson = new Lessons();
+            $lesson->name = $data['fileName'];
+            $lesson->description = $data['fileDesc'];
+            $lesson->course_id = $course->id;
+            $lesson->file = $data['link'];
+            $lesson->save();
+        }
+        else{
+            return redirect()->back()->with('message', 'Lesson not uploaded');
+        }
 
-        return redirect('/teacher/courses/' . $course->id);
+        return redirect('/teacher/courses/' . $course->id)->with('message', 'Lesson uploaded successfully');
     }
 
     public function store()
@@ -110,8 +145,12 @@ class CoursesController extends Controller
         if(auth()->user()->jmbg !== (int)$lesson->course->user_id){
             return redirect('/');
         }
-        $lesson->delete();
 
+        // dd(Cloudinary::destroy($lesson->file, [
+        //     'resource_type' => 'raw',
+        // ]));
+
+        $lesson->delete();
         
         return redirect()->back()->with('message', 'Lesson deleted successfully');
     }
