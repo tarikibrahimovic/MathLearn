@@ -18,21 +18,21 @@
         </div>
     </div>
 
-    
+
     @if($user->isTeacher($course->id) == false)
-        @if($user->isFollowing($course->id) == false)
-            <form action="{{route('follows.store', $course->id)}}" method="post">
-                @csrf
-                @method('post')
-                <button class="btn btn-primary">Follow this Course</button>
-            </form>
-        @else
-            <form action="{{route('follows.destroy', $course->id)}}" method="post">
-                @csrf
-                @method('delete')
-                <button class="btn btn-primary">Unfollow this Course</button>
-            </form>
-        @endif
+    @if($user->isFollowing($course->id) == false)
+    <form action="{{route('follows.store', $course->id)}}" method="post">
+        @csrf
+        @method('post')
+        <button class="btn btn-primary">Follow this Course</button>
+    </form>
+    @else
+    <form action="{{route('follows.destroy', $course->id)}}" method="post">
+        @csrf
+        @method('delete')
+        <button class="btn btn-primary">Unfollow this Course</button>
+    </form>
+    @endif
     @endif
 
 
@@ -71,14 +71,45 @@
                     <form action="{{route('lessons.destroy', $lesson->id)}}" method="post">
                         @csrf
                         @method('delete')
-                        <div class="row">
-                            <button class="btn btn-danger">Delete</button>
-                        </div>
+                        <button class="btn btn-danger">Delete</button>
                     </form>
                     @endif
                 </li>
-
                 @endforeach
+
+            </ul>
+            <h2>Tests</h2>
+            <ul>
+                @if($user->isTeacher($course->id) == true)
+                <form action="{{ route('test.create', $course->id) }}" method="get">
+                    @csrf
+                    @method('get')
+                    <button class="btn btn-primary">Add Test</button>
+                </form>
+                @endif
+
+                @if($course->test != null)
+                @foreach($course->test as $test)
+                <li>
+                    <div class="row">
+                        <a href="">{{$test->name}}</a>
+                        @if($user->isTeacher($course->id) == true)
+                        <form action="{{route('test.edit', $test->id)}}" method="get">
+                            @csrf
+                            @method('get')
+                            <button class="btn btn-primary">Edit</button>
+                        </form>
+
+                        <form action="{{route('test.destroy', $test->id)}}" method="post">
+                            @csrf
+                            @method('delete')
+                            <button class="btn btn-danger">Delete</button>
+                        </form>
+                        @endif
+                    </div>
+                </li>
+                @endforeach
+                @endif
             </ul>
         </div>
     </div>

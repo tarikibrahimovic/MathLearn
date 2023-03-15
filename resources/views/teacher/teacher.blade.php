@@ -21,8 +21,6 @@
         @endforeach
     </div>
 
-    <button id="nista">Nista</button>
-
     <form method="post" action="{{ route('courses.create') }}" >
         @csrf
         @Method('GET')

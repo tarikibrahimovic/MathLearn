@@ -27,6 +27,10 @@ class Courses extends Model
         return $this->belongsTo(User::class, 'user_id', 'jmbg');
     }
 
+    public function test(){
+        return $this->hasMany(Test::class);
+    }
+
     public function following(){
         return $this->belongsToMany(User::class);
     }
