@@ -7,6 +7,7 @@ use App\Models\Courses;
 use App\Models\User;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use App\Models\Lessons;
+use App\Models\LessonsUser;
 use Illuminate\Support\Facades\Session;
 
 use function Termwind\render;
@@ -127,7 +128,6 @@ class CoursesController extends Controller
         $imagePath = request('image')->store('uploads', 'public');
 
         $image_uploaded = Cloudinary::upload(public_path("storage/{$imagePath}"))->getSecurePath();
-        //remove image from local storage
         unlink(public_path("storage/{$imagePath}"));
 
         auth()->user()->courses()->create([
@@ -146,12 +146,30 @@ class CoursesController extends Controller
             return redirect('/');
         }
 
-        // dd(Cloudinary::destroy($lesson->file, [
-        //     'resource_type' => 'raw',
-        // ]));
-
         $lesson->delete();
         
         return redirect()->back()->with('message', 'Lesson deleted successfully');
+    }
+
+    public function downloadLesson(int $lesson_id)
+    {
+        $lesson = Lessons::find($lesson_id);
+        $course = Courses::find($lesson->course_id);
+        $user = auth()->user();
+
+        if(auth()->user()->type !== 'predavac' && auth()->user()->jmbg !== (int)$course->user_id){
+            return redirect('/');
+        }
+
+        if (!LessonsUser::where('lesson_id', $lesson_id)->where('user_id', auth()->user()->jmbg)->exists())
+        {
+            LessonsUser::create([
+                'lesson_id' => $lesson_id,
+                'user_id' => auth()->user()->jmbg,
+            ]);
+        }
+
+        Session::flash('downloadFile', $lesson->file);
+        return view('courses.show', compact('course', 'user'));
     }
 }

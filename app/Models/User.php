@@ -64,6 +64,11 @@ class User extends Authenticatable
         return $this->hasMany(Courses::class, 'user_id', 'jmbg');
     }
 
+    public function lessons()
+    {
+        return $this->belongsToMany(Lessons::class, 'lessons_user', 'user_id', 'lesson_id');
+    }
+
     public function isTeacher($courseId)
     {
         $user = User::find(auth()->user()->jmbg);
@@ -93,6 +98,11 @@ class User extends Authenticatable
 
     public function following(){
         return $this->belongsToMany(Courses::class);
+    }
+
+    public function results()
+    {
+        return $this->hasMany(Result::class, 'user_id', 'jmbg');
     }
 
 }

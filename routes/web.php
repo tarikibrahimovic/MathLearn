@@ -29,22 +29,29 @@ Route::middleware(['type:admin'])->group(function () {
 
 Route::middleware(['type:predavac'])->group(function () {
     Route::get('/teacher', [App\Http\Controllers\TeachersController::class, 'index'])->name('teacher.index');
+
     Route::get('/teacher/courses/create', [App\Http\Controllers\CoursesController::class, 'create'])->name('courses.create');
     Route::post('/teacher/courses', [App\Http\Controllers\CoursesController::class, 'store'])->name('courses.store');
     Route::get('/teacher/courses/{id}/edit', [App\Http\Controllers\CoursesController::class, 'edit'])->name('courses.edit');
     Route::put('/teacher/courses/{id}/update', [App\Http\Controllers\CoursesController::class, 'update'])->name('courses.update');
+
     Route::delete('/teacher/lesson/{id}', [App\Http\Controllers\CoursesController::class, 'destroy'])->name('lessons.destroy');
     Route::post('/teacher/lesson/store/{id}', [App\Http\Controllers\CoursesController::class, 'storeLesson'])->name('lessons.store');
     Route::get('/teacher/lesson/create/{id}', [App\Http\Controllers\CoursesController::class, 'createLesson'])->name('lessons.create');
+    Route::get('/teacher/lesson/{id}', [App\Http\Controllers\CoursesController::class, 'downloadLesson'])->name('lessons.download');
+
     Route::get('/teacher/followers/{id}', [App\Http\Controllers\FollowsController::class, 'show'])->name('follows.show');
+
     Route::get('/teacher/test/create/{id}', [App\Http\Controllers\TestController::class, 'create'])->name('test.create');
     Route::post('/teacher/test/store/{id}', [App\Http\Controllers\TestController::class, 'store'])->name('test.store');
     Route::get('/teacher/test/{id}', [App\Http\Controllers\TestController::class, 'show'])->name('test.show');
     Route::get('/teacher/test/{id}/edit', [App\Http\Controllers\TestController::class, 'edit'])->name('test.edit');
+    Route::delete('/teacher/test/{id}', [App\Http\Controllers\TestController::class, 'destroy'])->name('test.destroy');
+    Route::post('/teacher/test/check/{id}', [App\Http\Controllers\TestController::class, 'check'])->name('test.check');
+    Route::get('/teacher/test/results/{id}', [App\Http\Controllers\TestController::class, 'results'])->name('test.results');
+
     Route::delete('/teacher/question/{id}', [App\Http\Controllers\TestController::class, 'destroyQuestions'])->name('question.destroy');
     Route::post('/teacher/question/store/{id}', [App\Http\Controllers\TestController::class, 'storeQuestion'])->name('question.store');
-    //route for test destroy
-    Route::delete('/teacher/test/{id}', [App\Http\Controllers\TestController::class, 'destroy'])->name('test.destroy');
 });
 
 Route::middleware(['type:korisnik'])->group(function (){

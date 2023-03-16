@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Session;
 use App\Models\Courses;
 use App\Models\Question;
 use App\Models\Answer;
+use App\Models\Result;
 
 class TestController extends Controller
 {
@@ -61,19 +62,20 @@ class TestController extends Controller
                 'courses_id' => $course_id
             ]);
             $test = Test::where('name', $data['name'])->first();
+            $answerNumber = 4;
             for ($i = 0; $i < count(request('questions')); $i++) {
-                Question::create([
+                $question = Question::create([
                     'question' => request('questions')[$i],
                     'tests_id' => $test->id
                 ]);
-                for ($j = 0; $j < count(request('answers')); $j++) {
-
+                for ($j = $answerNumber - 4; $j < $answerNumber; $j++) {
                     Answer::create([
                         'answer' => request('answers')[$j],
                         'is_correct' => request('correct')[$i] == $j ? true : false,
-                        'questions_id' => $test->questions()->first()->id
+                        'questions_id' => $question->id
                     ]);
                 }
+                $answerNumber += 4;
             }
             Session::flash('message', 'Test is successfully created!');
         } else {
@@ -86,6 +88,11 @@ class TestController extends Controller
     public function show(int $test_id)
     {
         $test = Test::find($test_id);
+        if(Result::where('user_id', auth()->user()->jmbg)->where('test_id', request('id'))->first()){
+            $course_id = Test::find(request('id'))->courses_id;
+            Session::flash('message', 'You already answered this test!');
+            return redirect()->route('courses.show', $course_id);
+        } 
         return view('test.show', compact('test'));
     }
 
@@ -106,5 +113,59 @@ class TestController extends Controller
         $test = Test::find($test_id);
         $test->delete();
         return redirect()->back()->with('message', 'Test is successfully deleted!');
+    }
+
+    public function check(){
+
+        // if(Result::where('user_id', auth()->user()->jmbg)->where('test_id', request('id'))->first()){
+        //     $course_id = Test::find(request('id'))->courses_id;
+        //     return redirect()->route('courses.show', $course_id);
+        // }
+
+        $test = Test::find(request('id'));
+        $questions = $test->questions;
+
+        $correctAnswers = $questions->map(function($question){
+            return $question->answers->where('is_correct', true)->first()->id;
+        });
+
+        $userAnswers = collect(request('answers'));
+
+        $helpNumber = request('helpNumber');
+        
+        $correct = 0;
+        $wrong = 0;
+        $notAnswered = 0;
+        for($i = 0; $i < $correctAnswers->count(); $i++){
+            if($correctAnswers[$i] == ($userAnswers[$i]??false)){
+                $correct++;
+            }else if($userAnswers[$i]??false){
+                $notAnswered++;
+            }else{
+                $wrong++;
+            }
+        }
+
+        $overallScore = ($correct * 2) - $helpNumber;
+
+        $result = Result::create([
+            'test_id' => request('id'),
+            'user_id' => auth()->user()->jmbg,
+            'score' => $overallScore,
+            'helps' => $helpNumber,
+        ]);
+
+        return view('test.result', compact('test', 'questions', 'userAnswers', 'correctAnswers', 'result'));
+
+    }
+
+    public function result(int $test_id){
+        $test = Test::find($test_id);
+        $questions = $test->questions;
+        $userAnswers = collect(request('answers'));
+        $correctAnswers = $questions->map(function($question){
+            return $question->answers->where('is_correct', true)->first()->id;
+        });
+        return view('test.result', compact('test', 'questions', 'userAnswers', 'correctAnswers'));
     }
 }

@@ -65,10 +65,10 @@
 
                 @foreach($course->lesson as $lesson)
                 <li>
-                    <a href="{{$lesson->file}}">{{$lesson->name}}</a>
+                    <a href="{{ route('lessons.download', $lesson->id) }}">{{ $lesson->name }}</a>
                     @if($user->isTeacher($course->id) == true)
 
-                    <form action="{{route('lessons.destroy', $lesson->id)}}" method="post">
+                    <form action="{{ route('lessons.destroy', $lesson->id) }}" method="post">
                         @csrf
                         @method('delete')
                         <button class="btn btn-danger">Delete</button>
@@ -92,7 +92,7 @@
                 @foreach($course->test as $test)
                 <li>
                     <div class="row">
-                        <a href="">{{$test->name}}</a>
+                        <a href="{{ route('test.show', $test->id) }}">{{$test->name}}</a>
                         @if($user->isTeacher($course->id) == true)
                         <form action="{{route('test.edit', $test->id)}}" method="get">
                             @csrf
@@ -113,5 +113,14 @@
             </ul>
         </div>
     </div>
+    @if(Session('downloadFile'))
+        <script>
+            window.location.href = "{{Session('downloadFile')}}";
+            setTimeout(function() {
+                {{Session::forget('downloadFile')}}
+                window.history.back();
+            }, 1000);
+        </script>
+    @endif
 </div>
 @endsection
