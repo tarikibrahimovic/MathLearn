@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('image');
             $table->string('user_id');
+            $table->unsignedBigInteger('status')->default('1');
 
             $table->foreign('user_id')->references('jmbg')->on('users')->onDelete('cascade');
             $table->timestamps();

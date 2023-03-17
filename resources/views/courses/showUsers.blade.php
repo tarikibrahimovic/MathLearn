@@ -16,14 +16,20 @@
                 <th scope="col">Name</th>
                 <th scope="col">Surname</th>
                 <th scope="col">Email</th>
+                <th scope="col">Score</th>
+                <th scope="col">Test Name</th>
+                <th scope="col">Test Hardness</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($followers as $follower)
+            @foreach($users as $user)
             <tr>
-                <td>{{$follower->user->name}}</td>
-                <td>{{$follower->user->surname}}</td>
-                <td>{{$follower->user->email}}</td>
+                <td>{{$user->name}}</td>
+                <td>{{$user->surname}}</td>
+                <td>{{$user->email}}</td>
+                <td>{{$user->score}}</td>
+                <td>{{$user->testName}}</td>
+                <td>{{$user->hardness == 1 ? "Easy" : ($user->hardness == 2 ? "Medium" : "Hard")}}</td>
             </tr>
             @endforeach
         </tbody>

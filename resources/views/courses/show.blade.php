@@ -3,7 +3,21 @@
 @section('content')
 <div class="container">
 
-    <h1>{{$course->name}}</h1>
+
+    <div class="d-flex my-3 align-items-center gap-4">
+        <img src="{{$course->image}}" alt="course" style="width: 75px; height:75px; object-fit:cover; border-radius: 50%;">
+        <h1>{{$course->name}}</h1>
+        <form action="{{ route('courses.deactivate', $course->id) }}" method="post">
+            @csrf
+            @method('post')
+            @if($course->status == 1)
+                <button class="btn btn-danger">Deactivate</button>
+            @else
+                <button class="btn btn-success">Activate</button>
+            @endif
+        </form>
+    </div>
+
 
     @if(Session('message'))
     <div class="alert alert-success">
@@ -14,10 +28,12 @@
 
     <div class="row">
         <div class="col-md-8">
-            <p>{{$course->description}}</p>
+            <h3>{{$course->description}}</h3>
+        </div>
+        <div class="col-md-8">
+            <h3>Course Status: <b class="{{ $course->status == 1 ? 'text-success': 'text-danger' }}">{{$course->status == 1 ? 'Active': 'Closed'}}</b></h3>
         </div>
     </div>
-
 
     @if($user->isTeacher($course->id) == false)
     @if($user->isFollowing($course->id) == false)
@@ -34,7 +50,10 @@
     </form>
     @endif
     @endif
+    <hr>
 
+
+    @if($follows && $course->status == 1)
 
     @if($user->isTeacher($course->id) == true)
     <form action="{{route('courses.edit', $course->id)}}" method="get">
@@ -115,12 +134,10 @@
     </div>
     @if(Session('downloadFile'))
         <script>
-            window.location.href = "{{Session('downloadFile')}}";
-            setTimeout(function() {
-                {{Session::forget('downloadFile')}}
-                window.history.back();
-            }, 1000);
+            window.open("{{Session('downloadFile')}}", "_blank");
+            {{Session::forget('downloadFile')}}
         </script>
+    @endif
     @endif
 </div>
 @endsection

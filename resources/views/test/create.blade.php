@@ -64,10 +64,10 @@
         <div class="row">
             <label for="correct">Correct Answer</label>
             <select name="correct[]" id="correct">
-                <option value="1">Answer 1</option>
-                <option value="2">Answer 2</option>
-                <option value="3">Answer 3</option>
-                <option value="4">Answer 4</option>
+                <option value="0">Answer 1</option>
+                <option value="1">Answer 2</option>
+                <option value="2">Answer 3</option>
+                <option value="3">Answer 4</option>
             </select>
         </div>
         <button class="btn btn-danger" onclick="removeQuestion(this)">Remove Question</button>

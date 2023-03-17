@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Session;
 use App\Models\Courses;
 use App\Models\Question;
 use App\Models\Answer;
+use App\Models\LessonsUser;
 use App\Models\Result;
+use Termwind\Components\Dd;
 
 class TestController extends Controller
 {
@@ -88,11 +90,28 @@ class TestController extends Controller
     public function show(int $test_id)
     {
         $test = Test::find($test_id);
-        if(Result::where('user_id', auth()->user()->jmbg)->where('test_id', request('id'))->first()){
+        $course = Courses::find($test->courses_id);
+        $courseLessons = $course->lesson->pluck('id');
+        $downloadedLessons = LessonsUser::where('user_id', auth()->user()->jmbg)->get();
+        $downloadedLessons = $downloadedLessons->whereIn('lesson_id', $courseLessons);
+        $coureTests = $course->test->pluck('id');
+        $userTests = Result::where('user_id', auth()->user()->jmbg)->get();
+        if($userTests->whereIn('test_id', $coureTests)->count() > 0){
             $course_id = Test::find(request('id'))->courses_id;
-            Session::flash('message', 'You already answered this test!');
+            Session::flash('message', 'You already answered a test from this course!');
             return redirect()->route('courses.show', $course_id);
-        } 
+        }
+        if($downloadedLessons->count() != $courseLessons->count()){
+            $course_id = Test::find(request('id'))->courses_id;
+            Session::flash('message', 'You did not download all lessons on this course!');
+            return redirect()->route('courses.show', $course_id);
+        }
+        Result::create([
+            'user_id' => auth()->user()->jmbg,
+            'test_id' => request('id'),
+            'score' => 0,
+            'helps' => 0,
+        ]);
         return view('test.show', compact('test'));
     }
 
@@ -116,11 +135,6 @@ class TestController extends Controller
     }
 
     public function check(){
-
-        // if(Result::where('user_id', auth()->user()->jmbg)->where('test_id', request('id'))->first()){
-        //     $course_id = Test::find(request('id'))->courses_id;
-        //     return redirect()->route('courses.show', $course_id);
-        // }
 
         $test = Test::find(request('id'));
         $questions = $test->questions;
@@ -148,12 +162,10 @@ class TestController extends Controller
 
         $overallScore = ($correct * 2) - $helpNumber;
 
-        $result = Result::create([
-            'test_id' => request('id'),
-            'user_id' => auth()->user()->jmbg,
-            'score' => $overallScore,
-            'helps' => $helpNumber,
-        ]);
+        $result = Result::where('user_id', auth()->user()->jmbg)->where('test_id', request('id'))->first();
+        $result->score = $overallScore;
+        $result->helps = $helpNumber;
+        $result->save();
 
         return view('test.result', compact('test', 'questions', 'userAnswers', 'correctAnswers', 'result'));
 

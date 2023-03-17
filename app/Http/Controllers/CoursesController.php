@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Courses;
+use App\Models\CoursesUser;
 use App\Models\User;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use App\Models\Lessons;
@@ -25,7 +26,14 @@ class CoursesController extends Controller
     {
         $course = Courses::find(request('id'));
         $user = auth()->user();
-        return view('courses.show', compact('course', 'user'));
+        
+        if (CoursesUser::where('user_jmbg', $user->jmbg)->where('courses_id', $course->id)->first()) {
+            $follows = true;
+        }
+        else{
+            $follows = false;
+        }
+        return view('courses.show', compact('course', 'user', 'follows'));
     }
 
     public function edit()
@@ -70,7 +78,6 @@ class CoursesController extends Controller
         if(auth()->user()->type !== 'predavac' && auth()->user()->jmbg !== (int)$course->user_id){
             return redirect('/');
         }
-        // return view('lesson.create', compact('course'));
         return view('lesson.create', compact('course', 'user'));
     }
 
@@ -78,8 +85,6 @@ class CoursesController extends Controller
         $data = request()->validate([
             'fileName' => 'required',
             'fileDesc' => 'required',
-            'files' => '',
-            'link' => ''
         ]);
 
         $course = Courses::find(request('id'));
@@ -87,7 +92,8 @@ class CoursesController extends Controller
             return redirect('/');
         }
 
-        if ($data['files'] && $data['fileName'] && $data['fileDesc']) {
+
+        if (request('files') && $data['fileName'] && $data['fileDesc']) {
             foreach (request('files') as $file) {
                 $lesson = new Lessons();
                 $lesson->name = $data['fileName'];
@@ -102,12 +108,12 @@ class CoursesController extends Controller
             }
             unlink(public_path("storage/{$lessonPath}"));
         }
-        else if ($data['link'] && $data['fileName'] && $data['fileDesc']) {
+        else if (request('link') && $data['fileName'] && $data['fileDesc']) {
             $lesson = new Lessons();
             $lesson->name = $data['fileName'];
             $lesson->description = $data['fileDesc'];
             $lesson->course_id = $course->id;
-            $lesson->file = $data['link'];
+            $lesson->file = request('link');
             $lesson->save();
         }
         else{
@@ -154,12 +160,6 @@ class CoursesController extends Controller
     public function downloadLesson(int $lesson_id)
     {
         $lesson = Lessons::find($lesson_id);
-        $course = Courses::find($lesson->course_id);
-        $user = auth()->user();
-
-        if(auth()->user()->type !== 'predavac' && auth()->user()->jmbg !== (int)$course->user_id){
-            return redirect('/');
-        }
 
         if (!LessonsUser::where('lesson_id', $lesson_id)->where('user_id', auth()->user()->jmbg)->exists())
         {
@@ -170,6 +170,24 @@ class CoursesController extends Controller
         }
 
         Session::flash('downloadFile', $lesson->file);
-        return view('courses.show', compact('course', 'user'));
+        return redirect()->away($lesson->file);
+
+    }
+
+    public function deactivate()
+    {
+        $course = Courses::find(request('id'));
+        if(auth()->user()->jmbg !== (int)$course->user_id){
+            return redirect('/');
+        }
+
+        $pomocna = $course->status;
+        $course->status = !$pomocna;
+        $course->save();
+
+        if($pomocna == true)
+            return redirect()->back()->with('message', 'Course dectivated successfully');
+        
+        return redirect()->back()->with('message', 'Course activated successfully');
     }
 }
