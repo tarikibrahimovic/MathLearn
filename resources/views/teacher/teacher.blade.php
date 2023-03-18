@@ -7,21 +7,25 @@
     <div class="row">
         <h3>Your courses</h3>
         <hr>
-        @foreach($courses as $course)
+        <div class="container d-flex flex-wrap gap-2">
 
-        <div class="col-md-4" onclick="window.location.href='{{ route('courses.show', $course->id) }}'">
-            <div class="card">
-                <div class="card-header d-flex align-items-center gap-3">
-                <img src="{{$course->image}}" alt="course" style="width: 75px; height:75px; object-fit:cover; border-radius: 50%;">
-                    <h3>{{$course->name}}</h3>
-                </div>
-                <div class="card-body">
-                    <p>{{$course->description}}</p>
-                    <p>Status: <b class="{{ $course->status == 1 ? 'text-success': 'text-danger' }}">{{$course->status == 1 ? 'Active' : 'Closed'}}</b></p>
+            @foreach($courses as $course)
+    
+            <div class="col-md-3" onclick="window.location.href='{{ route('courses.show', $course->id) }}'">
+                <div class="card">
+                    <div class="card-header d-flex align-items-center gap-3">
+                    <img src="{{$course->image}}" alt="course" style="width: 75px; height:75px; object-fit:cover; border-radius: 50%;">
+                        <h3>{{$course->name}}</h3>
+                    </div>
+                    <div class="card-body">
+                        <p>{{$course->description}}</p>
+                        <p>Status: <b class="{{ $course->status == 1 ? 'text-success': 'text-danger' }}">{{$course->status == 1 ? 'Active' : 'Closed'}}</b></p>
+                    </div>
                 </div>
             </div>
+            @endforeach
+
         </div>
-        @endforeach
     </div>
 
     <form method="post" action="{{ route('courses.create') }}" >

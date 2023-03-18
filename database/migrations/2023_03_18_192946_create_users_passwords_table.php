@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lessons', function (Blueprint $table) {
+        Schema::create('users_passwords', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->string('description');
-            $table->foreignId('course_id')->references('id')->on('courses');
-            $table->string('file');
-
+            $table->string('user_id');
+            $table->string('password');
             $table->timestamps();
+
+            $table->foreign('user_id')->references('jmbg')->on('users')->onDelete('cascade');
         });
     }
 
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lessons');
+        Schema::dropIfExists('users_passwords');
     }
 };

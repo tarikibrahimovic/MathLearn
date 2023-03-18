@@ -25,7 +25,8 @@ return new class extends Migration
             $table->string('place_of_birth');
             $table->string('image');
             $table->string('type');
-            $table->string('verified')->default('0');
+            $table->string('approved')->default('0');
+            $table->string('active')->default('1');
             $table->rememberToken();
             $table->timestamps();
         });

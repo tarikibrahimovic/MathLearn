@@ -31,7 +31,7 @@ class Courses extends Model
     }
 
     public function following(){
-        return $this->belongsToMany(User::class);
+        return $this->hasMany(CoursesUser::class);
     }
 
 }

@@ -25,7 +25,7 @@
         <div class="">
             <img src="{{$user->image}}" alt="" width="100px" height="100px">
         </div>
-        @if($user->verified == 0)
+        @if($user->approved == 0)
         <form action="{{ route('admin.update', [$user->jmbg]) }}" method="POST">
             @csrf
             @method('PATCH')

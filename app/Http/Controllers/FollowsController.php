@@ -58,6 +58,9 @@ class FollowsController extends Controller
         $courseResults = [];
 
         $users = new Collection();
+        if($followers->count() == 0){
+            return redirect()->back()->with('message', 'No one is following this course');
+        }
         foreach($followers as $follower){
             $courseResults[$follower->user->jmbg] = $follower->user->results->whereIn('test_id', $courseTests->pluck('id')->toArray())->first()->score;
             $users->push((object)[

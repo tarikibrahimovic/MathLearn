@@ -2,13 +2,13 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -32,7 +32,8 @@ class User extends Authenticatable
         'jmbg',
         'image',
         'type',
-        'verified',
+        'approved',
+        'active'
     ];
 
     /**
@@ -53,6 +54,14 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function isActive(){
+        $user = User::find(auth()->user()->jmbg);
+        if ($user->active == 1){
+            return true;
+        }
+        return false;
+    }
 
     public function isType($role)
     {
@@ -97,7 +106,7 @@ class User extends Authenticatable
     }
 
     public function following(){
-        return $this->belongsToMany(Courses::class);
+        return $this->hasMany(CoursesUser::class);
     }
 
     public function results()

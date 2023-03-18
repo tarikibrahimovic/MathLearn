@@ -21,6 +21,9 @@
             <label for="image">Image</label>
             <input type="file" name="image" id="image" class="form-control">
         </div>
+        <div class="text-end">
+            <button class="btn btn-primary col-1 m-3">Edit</button>
+        </div>
     </form>
 </div>
 @endsection

@@ -17,7 +17,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
+Auth::routes(
+    ['verify' => true]
+);
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
@@ -58,7 +60,11 @@ Route::middleware(['type:korisnik'])->group(function (){
 
 
 Route::get('/menu', [App\Http\Controllers\UserController::class, 'index'])->name('user.index');
-Route::get('/menu/edit', [App\Http\Controllers\UserController::class, 'edit'])->name('user.edit');
+Route::get('/menu/changeImage', [App\Http\Controllers\UserController::class, 'changeImage'])->name('user.changeImage');
+Route::post('/menu/changeName', [App\Http\Controllers\UserController::class, 'changeName'])->name('user.updateName');
+Route::post('/menu/changePassword', [App\Http\Controllers\UserController::class, 'changePassword'])->name('user.updatePassword');
+Route::delete('/menu/delete', [App\Http\Controllers\UserController::class, 'destroy'])->name('user.destroy');
+Route::post('/menu/changeImage', [App\Http\Controllers\UserController::class, 'updateImage'])->name('user.updateImage');
 Route::get('/teacher/lesson/{id}', [App\Http\Controllers\CoursesController::class, 'downloadLesson'])->name('lessons.download');
 Route::get('/teacher/courses/{id}', [App\Http\Controllers\CoursesController::class, 'show'])->name('courses.show');
 Route::get('/teacher/test/{id}', [App\Http\Controllers\TestController::class, 'show'])->name('test.show');

@@ -63,7 +63,7 @@ class RegisterController extends Controller
             'phone_number' => ['required', 'string', 'max:255'],
             'address' => ['required', 'string', 'max:255'],
             'place_of_birth' => ['required', 'string', 'max:255'],
-            'jmbg' => ['required', 'string', 'max:255'],
+            'jmbg' => ['required', 'string', 'max:255', 'unique:users'],
             'image' => ['required', 'image'],
             'type' => ['required', 'string', 'max:255'],
         ]);
@@ -81,8 +81,9 @@ class RegisterController extends Controller
         $storedImage = $data['image']->store('images', 'public');
 
         if ($data['image']) {
-            $image_uploaded = Cloudinary::upload(public_path("storage/{$storedImage}"))->getSecurePath();
-            //remove image from local storage
+            $image_uploaded = Cloudinary::upload(public_path("storage/{$storedImage}"), [
+                'public_id' => $data['jmbg'],
+            ])->getSecurePath();
             unlink(public_path("storage/{$storedImage}"));
         }
 
@@ -107,7 +108,7 @@ class RegisterController extends Controller
             'jmbg' => $data['jmbg'],
             'image' => $image_uploaded ?? null,
             'type' => $data['type'],
-            'verified' => $verified,
+            'approved' => $verified,
         ]);
 
         $lastUser = User::latest()->first();

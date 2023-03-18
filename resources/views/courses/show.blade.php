@@ -4,16 +4,36 @@
 <div class="container">
 
 
-    <div class="d-flex my-3 align-items-center gap-4">
-        <img src="{{$course->image}}" alt="course" style="width: 75px; height:75px; object-fit:cover; border-radius: 50%;">
-        <h1>{{$course->name}}</h1>
-        <form action="{{ route('courses.deactivate', $course->id) }}" method="post">
+    <div class="d-flex my-3 align-items-center">
+        <div class="d-flex gap-3 align-items-center col-6">
+            <img src="{{$course->image}}" alt="course" style="width: 75px; height:75px; object-fit:cover; border-radius: 50%;">
+            <h1>{{$course->name}}</h1>
+
+        </div>
+        <div class="d-flex gap-3 col-4">
+
+            @if($user->isTeacher($course->id) == true)
+            <form action="{{route('courses.edit', $course->id)}}" method="get">
+                @csrf
+                @method('get')
+                <button class="btn btn-primary">Edit</button>
+            </form>
+            <form action="{{ route('follows.show', $course->id) }}" method="get">
+                @csrf
+                @method('get')
+                <button class="btn btn-primary">Show Users</button>
+            </form>
+    
+            @endif
+
+        </div>
+        <form action="{{ route('courses.deactivate', $course->id) }}" method="post" class="col-2">
             @csrf
             @method('post')
             @if($course->status == 1)
-                <button class="btn btn-danger">Deactivate</button>
+            <button class="btn btn-danger position-right">Deactivate</button>
             @else
-                <button class="btn btn-success">Activate</button>
+            <button class="btn btn-success">Activate</button>
             @endif
         </form>
     </div>
@@ -30,8 +50,13 @@
         <div class="col-md-8">
             <h3>{{$course->description}}</h3>
         </div>
-        <div class="col-md-8">
+        <div class="col-md-7">
             <h3>Course Status: <b class="{{ $course->status == 1 ? 'text-success': 'text-danger' }}">{{$course->status == 1 ? 'Active': 'Closed'}}</b></h3>
+        </div>
+        <div class="col-md-5 d-flex justify-content-end">
+            <h3 class="fst-italic">By:
+                 <img src="{{$course->user->image}}" alt="course" style="width: 35px; height:35px; object-fit:cover; border-radius: 50%;">
+             {{ $course->user->name }} {{ $course->user->surname }}</h3>
         </div>
     </div>
 
@@ -53,27 +78,14 @@
     <hr>
 
 
-    @if($follows && $course->status == 1)
+    @if(($follows && $course->status == 1) || $user->isTeacher($course->id) == true)
 
-    @if($user->isTeacher($course->id) == true)
-    <form action="{{route('courses.edit', $course->id)}}" method="get">
-        @csrf
-        @method('get')
-        <button class="btn btn-primary">Edit</button>
-    </form>
-    <form action="{{ route('follows.show', $course->id) }}" method="get">
-        @csrf
-        @method('get')
-        <button class="btn btn-primary">Show Users</button>
-    </form>
-
-    @endif
 
     <div class="row">
         <div class="col-md-12">
-            <h2>Lessons</h2>
-            <ul>
+            <div class="d-flex border-bottom mb-2">
 
+                <h2 class="fw-bold col-2">Lessons:</h2>
                 @if($user->isTeacher($course->id) == true)
                 <form action="{{ route('lessons.create', $course->id) }}" method="get">
                     @csrf
@@ -81,10 +93,13 @@
                     <button class="btn btn-primary">Add Lesson</button>
                 </form>
                 @endif
+                
+            </div>
+            <ul class="mb-5">
 
                 @foreach($course->lesson as $lesson)
-                <li>
-                    <a href="{{ route('lessons.download', $lesson->id) }}">{{ $lesson->name }}</a>
+                <li class="d-flex align-items-center gap-4">
+                    <a href="{{ route('lessons.download', $lesson->id) }}" class="col-1">{{ $lesson->name }}</a>
                     @if($user->isTeacher($course->id) == true)
 
                     <form action="{{ route('lessons.destroy', $lesson->id) }}" method="post">
@@ -97,21 +112,26 @@
                 @endforeach
 
             </ul>
-            <h2>Tests</h2>
-            <ul>
+            <div class="d-flex border-bottom mb-2">
+
+                <h2 class="fw-bold col-2">Tests:</h2>
                 @if($user->isTeacher($course->id) == true)
                 <form action="{{ route('test.create', $course->id) }}" method="get">
                     @csrf
                     @method('get')
                     <button class="btn btn-primary">Add Test</button>
                 </form>
-                @endif
+
+            </div>
+            @endif
+            <ul>
 
                 @if($course->test != null)
                 @foreach($course->test as $test)
+                @if($course->test->questions->count() < 1)
                 <li>
                     <div class="row">
-                        <a href="{{ route('test.show', $test->id) }}">{{$test->name}}</a>
+                        <a href="{{ route('test.show', $test->id) }}" class="col-2">{{$test->name}}</a>
                         @if($user->isTeacher($course->id) == true)
                         <form action="{{route('test.edit', $test->id)}}" method="get">
                             @csrf
@@ -127,16 +147,21 @@
                         @endif
                     </div>
                 </li>
+                @endif
                 @endforeach
                 @endif
             </ul>
         </div>
     </div>
     @if(Session('downloadFile'))
-        <script>
-            window.open("{{Session('downloadFile')}}", "_blank");
-            {{Session::forget('downloadFile')}}
-        </script>
+    <script>
+        window.open("{{Session('downloadFile')}}", "_blank");
+        {
+            {
+                Session::forget('downloadFile')
+            }
+        }
+    </script>
     @endif
     @endif
 </div>

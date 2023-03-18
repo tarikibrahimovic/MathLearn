@@ -13,6 +13,15 @@
     </div>
     @endif
 
+
+    @if (session('error'))
+    <div class="col-md-12">
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
+    </div>
+    @endif
+
     <div class="row">
 
         <div class="col-md-4">
@@ -35,7 +44,7 @@
 
                     <div class="text-center">
 
-                        <a href="{{ route('user.edit', $user->id) }}" class="btn btn-primary mt-3">Change picture</a>
+                        <a href="{{ route('user.changeImage', $user->id) }}" class="btn btn-primary mt-3">Change picture</a>
 
                     </div>
 
@@ -87,32 +96,35 @@
                         </thead>
 
                         <tbody>
-
-                            @foreach ($user->courses as $course)
+                            @if(!$user->following->isEmpty())
+                            @foreach ($user->following as $follow)
 
                             <tr>
 
-                                <td class="align-middle">{{ $course->name }}</td>
+                                <td class="align-middle">{{ $follow->course->name }}</td>
 
-                                <td class="align-middle">{{ $course->description }}</td>
+                                <td class="align-middle">{{ $follow->course->description }}</td>
 
                                 <td class="align-middle">
 
-                                    <img src="{{$course->image}}" alt="course" style="width: 75px; height:75px; object-fit:cover; border-radius: 50%;">
+                                    <img src="{{$follow->course->image}}" alt="course" style="width: 75px; height:75px; object-fit:cover; border-radius: 50%;">
 
                                 </td>
 
                                 <td class="align-middle">
 
-                                    <a href="{{ route('courses.show', $course->id) }}" class="btn btn-primary">View</a>
+                                    <a href="{{ route('courses.show', $follow->course->id) }}" class="btn btn-primary">View</a>
 
                                 </td>
 
                             </tr>
 
-
-
                             @endforeach
+                            @else
+                            <tr>
+                                <td colspan="4" class="text-center">No courses</td>
+                            </tr>
+                            @endif
 
                         </tbody>
 
@@ -126,9 +138,38 @@
 
     </div>
 
-    <!-- form for changing password -->
+    <form action="{{ route('user.updateName') }}" class="mt-3" method="post">
+        @csrf
+        @method('post')
+        <h2>Change Name:</h2>
+        <hr>
+        <div class="row m-3">
+            <label for="name" class="col-form-label text-md-start">{{ __('Name') }}</label>
 
-    <form action="" class="mt-3">
+            <div>
+                <input id="name" type="text" class="form-control" name="name" required >
+            </div>
+        </div>
+        <div class="row m-3">
+            <label for="surname" class="col-form-label text-md-start">{{ __('Surname') }}</label>
+
+            <div>
+                <input id="surname" type="text" class="form-control" name="surname" required >
+            </div>
+        </div>
+
+        <div class="row m-3 text-md-end">
+            <div>
+                <button type="submit" class="btn btn-primary">
+                    {{ __('Change Name') }}
+                </button>
+            </div>
+        </div>
+    </form>
+
+    <form action="{{ route('user.updatePassword') }}" class="mt-3" method="post">
+        @csrf
+        @method('post')
         <h2>Change Password:</h2>
         <hr>
         <div class="row m-3">
@@ -162,28 +203,24 @@
         </div>
     </form>
 
-    <form action="" class="mt-3">
-        <h2>Change Name:</h2>
+    <form action="{{ route('user.destroy') }}" method="post">
+        @csrf
+        @method('delete')
+        <h2>Delete Account</h2>
         <hr>
+
         <div class="row m-3">
-            <label for="name" class="col-form-label text-md-start">{{ __('Name') }}</label>
+            <label for="password" class="col-form-label text-md-start">{{ __('Password') }}</label>
 
             <div>
-                <input id="name" type="text" class="form-control" name="name" required >
-            </div>
-        </div>
-        <div class="row m-3">
-            <label for="surname" class="col-form-label text-md-start">{{ __('Surname') }}</label>
-
-            <div>
-                <input id="surname" type="text" class="form-control" name="surname" required >
+                <input id="password" type="password" class="form-control" name="password" required >
             </div>
         </div>
 
         <div class="row m-3 text-md-end">
             <div>
                 <button type="submit" class="btn btn-primary">
-                    {{ __('Change Name') }}
+                    {{ __('Delete Account') }}
                 </button>
             </div>
         </div>

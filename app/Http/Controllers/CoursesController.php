@@ -60,7 +60,10 @@ class CoursesController extends Controller
             $course->description = $data['description'] ?? $course->description;
             if (request('image')) {
                 $imagePath = request('image')->store('uploads', 'public');
-                $image_stored = Cloudinary::upload(public_path("storage/{$imagePath}"))->getSecurePath();
+                Cloudinary::destroy($course->id);
+                $image_stored = Cloudinary::upload(public_path("storage/{$imagePath}"), [
+                    'public_id' => $course->id,
+                ])->getSecurePath();
                 unlink(public_path("storage/{$imagePath}"));
                 $course->image = $image_stored;
             }
@@ -102,6 +105,7 @@ class CoursesController extends Controller
                 $lessonPath = $file->store('uploads', 'public');
                 $lesson_stored = Cloudinary::upload(public_path("storage/{$lessonPath}"),[
                     'resource_type' => 'auto',
+                    'public_id' => $data['fileName'] . $course->id,
                 ])->getSecurePath();
                 $lesson->file = $lesson_stored;
                 $lesson->save();
@@ -151,6 +155,8 @@ class CoursesController extends Controller
         if(auth()->user()->jmbg !== (int)$lesson->course->user_id){
             return redirect('/');
         }
+
+        Cloudinary::destroy($lesson->name . $lesson->course_id);
 
         $lesson->delete();
         

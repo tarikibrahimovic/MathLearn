@@ -11,7 +11,6 @@ class AdminController extends Controller
     //
     public function index()
     {
-        // $users = User::where('verified', 0)->get();
         $users = User::all();
         return view('admin.adminApproving', compact('users'));
     }
@@ -19,7 +18,7 @@ class AdminController extends Controller
     public function update(Request $request, $id){
 
         $user = User::find($id);
-        $user->verified = 1;
+        $user->approved = 1;
         $user->save();
         Session::flash('approved', 'User approved');
         return redirect()->route('admin.index');
