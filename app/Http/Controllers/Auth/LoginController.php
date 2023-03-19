@@ -34,7 +34,7 @@ class LoginController extends Controller
         } else if (auth()->user()->type == 'predavac') {
             return '/teacher';
         } else {
-            return '/home';
+            return '/';
         }
     }
 

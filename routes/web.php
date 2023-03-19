@@ -22,11 +22,16 @@ Auth::routes(
 );
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Route::get('/home', function () {
+//     return view('welcome');
+// });
 
 Route::middleware(['type:admin'])->group(function () {
     Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.index');
     Route::patch('/admin/{id}', [App\Http\Controllers\AdminController::class, 'update'])->name('admin.update');
     Route::delete('/admin/{id}', [App\Http\Controllers\AdminController::class, 'destroy'])->name('admin.destroy');
+    Route::get('/admin/search', [App\Http\Controllers\AdminController::class, 'search'])->name('admin.search');
+    Route::post('/admin/notification', [App\Http\Controllers\AdminController::class, 'notification'])->name('admin.notification');
 });
 
 Route::middleware(['type:predavac'])->group(function () {
@@ -70,3 +75,4 @@ Route::get('/teacher/courses/{id}', [App\Http\Controllers\CoursesController::cla
 Route::get('/teacher/test/{id}', [App\Http\Controllers\TestController::class, 'show'])->name('test.show');
 Route::post('/teacher/test/check/{id}', [App\Http\Controllers\TestController::class, 'check'])->name('test.check');
 Route::get('/teacher/test/results/{id}', [App\Http\Controllers\TestController::class, 'results'])->name('test.results');
+Route::get('/courses', [App\Http\Controllers\CoursesController::class, 'index'])->name('courses.index');

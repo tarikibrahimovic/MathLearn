@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
             $table->string('user_id');
+            $table->string('title');
             $table->string('message');
             $table->foreign('user_id')->references('jmbg')->on('users')->onDelete('cascade');
             $table->timestamps();
