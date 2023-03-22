@@ -7,10 +7,16 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class UserController extends Controller
 {
     //
+
+    public function show(int $teachers_id){
+        $user = User::where('jmbg', $teachers_id)->first();
+        return view('teacher.show', compact('user'));
+    }
 
     public function index()
     {

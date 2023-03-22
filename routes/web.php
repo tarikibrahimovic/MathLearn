@@ -22,9 +22,6 @@ Auth::routes(
 );
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-// Route::get('/home', function () {
-//     return view('welcome');
-// });
 
 Route::middleware(['type:admin'])->group(function () {
     Route::get('/admin', [App\Http\Controllers\AdminController::class, 'index'])->name('admin.index');
@@ -59,12 +56,14 @@ Route::middleware(['type:predavac'])->group(function () {
 });
 
 Route::middleware(['type:korisnik'])->group(function (){
-    Route::post('/follow/{course}', [App\Http\Controllers\FollowsController::class, 'store'])->name('follows.store');
-    Route::delete('/follow/{course}', [App\Http\Controllers\FollowsController::class, 'destroy'])->name('follows.destroy');
+    Route::post('/follow/{id}', [App\Http\Controllers\FollowsController::class, 'store'])->name('follows.store');
+    Route::delete('/follow/{id}', [App\Http\Controllers\FollowsController::class, 'destroy'])->name('follows.destroy');
 });
 
 
 Route::get('/menu', [App\Http\Controllers\UserController::class, 'index'])->name('user.index');
+Route::post('/courses/search', [App\Http\Controllers\CoursesController::class, 'search'])->name('courses.search');
+Route::get('/teacher/{id}', [App\Http\Controllers\UserController::class, 'show'])->name('teacher.show');
 Route::get('/menu/changeImage', [App\Http\Controllers\UserController::class, 'changeImage'])->name('user.changeImage');
 Route::post('/menu/changeName', [App\Http\Controllers\UserController::class, 'changeName'])->name('user.updateName');
 Route::post('/menu/changePassword', [App\Http\Controllers\UserController::class, 'changePassword'])->name('user.updatePassword');

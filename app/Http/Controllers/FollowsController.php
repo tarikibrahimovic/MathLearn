@@ -25,6 +25,7 @@ class FollowsController extends Controller
             'user_jmbg' => $user->jmbg,
             'courses_id' => $course_id
         ]);
+
         return redirect()->back()->with('message', 'You are now following this course');
     }
 

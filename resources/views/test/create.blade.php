@@ -4,30 +4,33 @@
 
 <div class="container">
 
-    <h1>Create a Test</h1>
+    <button onclick="window.history.back()" class="btn btn-primary my-3">
+        < Go Back</button>
 
-    <form action="{{ route('test.store', $course->id) }}" method="post" id="form">
+            <h1>Create a Test</h1>
 
-        @csrf
-        @method('post')
-        <div class="row">
-            <label for="name">Test name</label>
-            <input type="text" name="name" id="name" class="form-control" required>
-        </div>
+            <form action="{{ route('test.store', $course->id) }}" method="post" id="form">
 
-        <div class="row">
-            <label for="hardness">Hardnes</label>
-            <select name="hardness" id="hardness">
-                <option value="1" selected>Easy</option>
-                <option value="2">Medium</option>
-                <option value="3">Hard</option>
-            </select>
-        </div>
-        <div id="question"></div>
-        <button class="btn btn-primary mt-3" onclick="addQuestion()" type="button">Add a Question</button>
-        <button class="btn btn-primary mt-3 mx-3">Create</button>
-    </form>
-    
+                @csrf
+                @method('post')
+                <div class="row">
+                    <label for="name">Test name</label>
+                    <input type="text" name="name" id="name" class="form-control" required>
+                </div>
+
+                <div class="row">
+                    <label for="hardness">Hardnes</label>
+                    <select name="hardness" id="hardness">
+                        <option value="1" selected>Easy</option>
+                        <option value="2">Medium</option>
+                        <option value="3">Hard</option>
+                    </select>
+                </div>
+                <div id="question"></div>
+                <button class="btn btn-primary mt-3" onclick="addQuestion()" type="button">Add a Question</button>
+                <button class="btn btn-primary mt-3 mx-3">Create</button>
+            </form>
+
 
 </div>
 
@@ -79,7 +82,6 @@
     function removeQuestion(element) {
         element.parentElement.remove();
     }
-
 </script>
 
 @endsection

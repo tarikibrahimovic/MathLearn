@@ -3,14 +3,15 @@
 @section('content')
 <div class="container">
 
+<button onclick="window.history.back()" class="btn btn-primary my-3"> < Go Back</button>
 
-    <div class="d-flex my-3 align-items-center">
+    <div class="d-flex my-3 align-items-center flex-wrap">
         <div class="d-flex gap-3 align-items-center col-6">
             <img src="{{$course->image}}" alt="course" style="width: 75px; height:75px; object-fit:cover; border-radius: 50%;">
             <h1>{{$course->name}}</h1>
 
         </div>
-        <div class="d-flex gap-3 col-4">
+        <div class="d-flex gap-3 col-4 flex-wrap">
 
             @if($user->isTeacher($course->id) == true)
             <form action="{{route('courses.edit', $course->id)}}" method="get">
@@ -23,11 +24,12 @@
                 @method('get')
                 <button class="btn btn-primary">Show Users</button>
             </form>
-    
+
             @endif
 
         </div>
-        <form action="{{ route('courses.deactivate', $course->id) }}" method="post" class="col-2">
+        @if($user->isTeacher($course->id) == true)
+        <form action="{{ route('courses.deactivate', $course->id) }}" method="post" class="w-auto">
             @csrf
             @method('post')
             @if($course->status == 1)
@@ -36,6 +38,7 @@
             <button class="btn btn-success">Activate</button>
             @endif
         </form>
+        @endif
     </div>
 
 
@@ -54,9 +57,12 @@
             <h3>Course Status: <b class="{{ $course->status == 1 ? 'text-success': 'text-danger' }}">{{$course->status == 1 ? 'Active': 'Closed'}}</b></h3>
         </div>
         <div class="col-md-5 d-flex justify-content-end">
-            <h3 class="fst-italic">By:
-                 <img src="{{$course->user->image}}" alt="course" style="width: 35px; height:35px; object-fit:cover; border-radius: 50%;">
-             {{ $course->user->name }} {{ $course->user->surname }}</h3>
+            <a href="{{ route('teacher.show', $course->user->jmbg) }}" class="text-decoration-none text-black">
+                <h3 class="fst-italic">By:
+                    <img src="{{$course->user->image}}" alt="course" style="width: 35px; height:35px; object-fit:cover; border-radius: 50%;">
+                    {{ $course->user->name }} {{ $course->user->surname }}
+                </h3>
+            </a>
         </div>
     </div>
 
@@ -83,7 +89,7 @@
 
     <div class="row">
         <div class="col-md-12">
-            <div class="d-flex border-bottom mb-2">
+            <div class="border-bottom mb-2">
 
                 <h2 class="fw-bold col-2">Lessons:</h2>
                 @if($user->isTeacher($course->id) == true)
@@ -93,7 +99,7 @@
                     <button class="btn btn-primary">Add Lesson</button>
                 </form>
                 @endif
-                
+
             </div>
             <ul class="mb-5">
 
@@ -112,23 +118,22 @@
                 @endforeach
 
             </ul>
-            <div class="d-flex border-bottom mb-2">
-
-                <h2 class="fw-bold col-2">Tests:</h2>
-                @if($user->isTeacher($course->id) == true)
-                <form action="{{ route('test.create', $course->id) }}" method="get">
-                    @csrf
-                    @method('get')
-                    <button class="btn btn-primary">Add Test</button>
-                </form>
-
+            <div class="border-bottom mb-2">
+                    <h2 class="fw-bold col-2">Tests:</h2>
+                    @if($user->isTeacher($course->id) == true)
+                    <form action="{{ route('test.create', $course->id) }}" method="get">
+                        @csrf
+                        @method('get')
+                        <button class="btn btn-primary">Add Test</button>
+                    </form>
             </div>
             @endif
-            <ul>
+            <ul class="row">
 
                 @if($course->test != null)
                 @foreach($course->test as $test)
-                @if($course->test->questions->count() < 1)
+                @if($test->questions->count() > 0)
+
                 <li>
                     <div class="row">
                         <a href="{{ route('test.show', $test->id) }}" class="col-2">{{$test->name}}</a>

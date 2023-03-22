@@ -3,37 +3,40 @@
 @section('content')
 
 <div class="container">
-    @if(Session('message'))
-    <div class="alert alert-success">
-        {{Session('message')}}
-    </div>
-    @endif
 
-    <h1>Users</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">Name</th>
-                <th scope="col">Surname</th>
-                <th scope="col">Email</th>
-                <th scope="col">Score</th>
-                <th scope="col">Test Name</th>
-                <th scope="col">Test Hardness</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($users as $user)
-            <tr>
-                <td>{{$user->name}}</td>
-                <td>{{$user->surname}}</td>
-                <td>{{$user->email}}</td>
-                <td>{{$user->score}}</td>
-                <td>{{$user->testName}}</td>
-                <td>{{$user->hardness == 1 ? "Easy" : ($user->hardness == 2 ? "Medium" : "Hard")}}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <button onclick="window.history.back()" class="btn btn-primary my-3">
+        < Go Back</button>
+            @if(Session('message'))
+            <div class="alert alert-success">
+                {{Session('message')}}
+            </div>
+            @endif
+
+            <h1>Users</h1>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Surname</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Score</th>
+                        <th scope="col">Test Name</th>
+                        <th scope="col">Test Hardness</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($users as $user)
+                    <tr>
+                        <td>{{$user->name}}</td>
+                        <td>{{$user->surname}}</td>
+                        <td>{{$user->email}}</td>
+                        <td>{{$user->score}}</td>
+                        <td>{{$user->testName}}</td>
+                        <td>{{$user->hardness == 1 ? "Easy" : ($user->hardness == 2 ? "Medium" : "Hard")}}</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
 
 </div>
 

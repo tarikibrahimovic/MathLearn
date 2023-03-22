@@ -42,12 +42,12 @@ class AdminController extends Controller
         return view('admin.adminApproving', compact('users'));
     }
 
-    public function notification(Request $request){
+    public function notification(){
         $user = auth()->user();
         Notifications::create([
-            'user_id' => $user->id,
-            'title' => $request->title,
-            'message' => $request->message,
+            'user_id' => $user->jmbg,
+            'title' => request('title'),
+            'message' => request('message'),
         ]);
         Session::flash('notification', 'Notification sent');
         return redirect()->route('admin.index');

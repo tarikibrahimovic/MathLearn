@@ -2,7 +2,7 @@
 
 @section('content')
 
-<section id="hero" class="d-flex align-items-center">
+<section id="hero" class="d-flex align-items-center min-vh-100">
 
     <div class="container">
         <div class="row">
@@ -45,11 +45,36 @@
     </div>
 
 </section>
+
+<!-- notification section -->
+
+<section id="notifications">
+    <?php
+        $notifications = DB::table('notifications')->get();
+        $courses = DB::table('courses')->get();
+    ?>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2>Latest News</h2>
+                <hr>
+            </div>
+            @foreach ($notifications as $notification)
+                <div class="card p-4">
+                    <h3 class="border-bottom">Title: {{ $notification->title }}</h3>
+                    <p class="card-text">Date: {{ $notification->created_at }} by: Admin</p>
+                    <p class="card-text">Message: {{ $notification->message }}</p>
+                    
+                </div>
+            @endforeach 
+        </div>
+    </div>
+</section>
+
+<hr>
+
 <!-- Courses Section -->
 <section id="courses">
-    <?php
-    $courses = DB::table('courses')->get();
-    ?>
 
     <div class="container">
         <div class="row">
@@ -85,7 +110,11 @@
                 <p>Sign up for one of our courses today and take the first step towards a new career!</p>
             </div>
             <div class="col-lg-3 cta-btn-container text-center">
+                @if(Auth::check())
+                    <a class="cta-btn btn btn-primary" href="{{route('courses.index')}}">Get Started</a>
+                @else
                 <a class="cta-btn btn btn-primary" href="{{route('register')}}">Get Started</a>
+                @endif
             </div>
         </div>
     </div>
@@ -116,20 +145,5 @@
 
             </div>
         </div>
-
-        @endsection
-
-        @section('scripts')
-
-        <script>
-            function scrollTo() {
-
-                window.scrollTo({
-                    top: 100,
-                    behavior: "smooth",
-                });
-
-            }
-        </script>
 
         @endsection

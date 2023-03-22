@@ -39,17 +39,17 @@
                 <h3>{{$user->jmbg}}</h3>
                 <h3>{{$user->email}}</h3>
                 <h3>{{$user->type}}</h3>
-                <div class="">
+                <div>
                     <img src="{{$user->image}}" alt="" width="100px" height="100px">
                 </div>
                 @if($user->approved == 0)
-                <form action="{{ route('admin.update', [$user->jmbg]) }}" method="POST">
+                <form action="{{ route('admin.update', $user->jmbg) }}" method="POST">
                     @csrf
                     @method('PATCH')
                     <button type="submit" class="btn btn-primary">Approve</button>
                 </form>
                 @endif
-                <form action="{{ route('admin.destroy', [$user->jmbg]) }}" method="POST">
+                <form action="{{ route('admin.destroy', $user->jmbg) }}" method="POST">
                     @csrf
                     @method('DELETE')
                     <button type="submit" class="btn btn-danger">Delete</button>
@@ -66,9 +66,9 @@
     </h2>
 
     <div class="collapse" id="collapseExample2">
-        <form action="" method="post" class="d-flex flex-column justfy-content-end">
+        <form action="{{ route('admin.notification') }}" method="POST" class="d-flex flex-column justfy-content-end">
             @csrf
-            @method('post')
+            @method('POST')
             <div class="form-group">
                 <label for="title">Title</label>
                 <input type="text" name="title" id="title" class="form-control">
@@ -77,7 +77,7 @@
                 <label for="content">Content</label>
                 <textarea name="message" id="content" cols="30" rows="10" class="form-control"></textarea>
             </div>
-            <button type="submit" class="btn btn-primary mt-3 col-1">Send</button>
+            <button class="btn btn-primary mt-3 col-1">Send</button>
         </form>
     </div>
     <hr>

@@ -4,76 +4,79 @@
 
 <div class="container">
 
-    @if(Session('message'))
-    <div class="alert alert-success">
-        {{Session('message')}}
-    </div>
-    @endif
+    <button onclick="window.history.back()" class="btn btn-primary my-3">
+        < Go Back</button>
 
-    <div class="row">
-        <div class="col-md-12">
-            <h1>Test: {{ $test->name }}</h1>
-        </div>
-        <div class="col-md-12">
-            <h1>Hardness: {{ $test->hardness == 1 ? "Easy" : ($test->hardness == 2 ? "Medium" : "Hard") }}</h1>
-        </div>
-        <div class="col-md-12 mb-3">
-            <h1>Questions:</h1>
-            <button class="btn btn-primary" onclick="addQuestion()">Add a Question</button>
+            @if(Session('message'))
+            <div class="alert alert-success">
+                {{Session('message')}}
+            </div>
+            @endif
 
-            @if($test->questions->count() == 1)
             <div class="row">
                 <div class="col-md-12">
-                    <h3>Question: {{ $test->questions[0]->question }}</h3>
+                    <h1>Test: {{ $test->name }}</h1>
                 </div>
                 <div class="col-md-12">
-                    <h3>Answers:</h3>
-                    <ul>
-                        @foreach($test->questions[0]->answers as $answer)
-                        <li>{{ $answer->answer }}</li>
-                        @endforeach
-                    </ul>
+                    <h1>Hardness: {{ $test->hardness == 1 ? "Easy" : ($test->hardness == 2 ? "Medium" : "Hard") }}</h1>
                 </div>
                 <div class="col-md-12 mb-3">
-                    <form action="{{ route('question.destroy', $test->questions[0]->id) }}" method="post">
+                    <h1>Questions:</h1>
+                    <button class="btn btn-primary" onclick="addQuestion()">Add a Question</button>
+
+                    @if($test->questions->count() == 1)
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3>Question: {{ $test->questions[0]->question }}</h3>
+                        </div>
+                        <div class="col-md-12">
+                            <h3>Answers:</h3>
+                            <ul>
+                                @foreach($test->questions[0]->answers as $answer)
+                                <li>{{ $answer->answer }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        <div class="col-md-12 mb-3">
+                            <form action="{{ route('question.destroy', $test->questions[0]->id) }}" method="post">
+                                @csrf
+                                @method('delete')
+                                <button class="btn btn-danger mb-3">Delete Question</button>
+                            </form>
+                        </div>
+                        <hr>
+                    </div>
+                    @else
+                    @foreach($test->questions as $question)
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h3>Question: {{ $question->question }}</h3>
+                        </div>
+                        <div class="col-md-12">
+                            <h3>Answers:</h3>
+                            <ul>
+                                @foreach($question->answers as $answer)
+                                <li>{{ $answer->answer }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                        <div class="col-md-12">
+                            <form action="{{ route('question.destroy', $test->questions[0]->id) }}" method="post">
+                                @csrf
+                                @method('delete')
+                                <button class="btn btn-danger mb-3">Delete Question</button>
+                            </form>
+                        </div>
+                        <hr>
+                    </div>
+                    @endforeach
+                    @endif
+                    <form action="{{ route('question.store', $test->id) }}" method="post" id="form">
                         @csrf
-                        @method('delete')
-                        <button class="btn btn-danger mb-3">Delete Question</button>
+                        @method('post')
                     </form>
                 </div>
-                <hr>
             </div>
-            @else
-            @foreach($test->questions as $question)
-            <div class="row">
-                <div class="col-md-12">
-                    <h3>Question: {{ $question->question }}</h3>
-                </div>
-                <div class="col-md-12">
-                    <h3>Answers:</h3>
-                    <ul>
-                        @foreach($question->answers as $answer)
-                        <li>{{ $answer->answer }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-                <div class="col-md-12">
-                    <form action="{{ route('question.destroy', $test->questions[0]->id) }}" method="post">
-                        @csrf
-                        @method('delete')
-                        <button class="btn btn-danger mb-3">Delete Question</button>
-                    </form>
-                </div>
-                <hr>
-            </div>
-            @endforeach
-            @endif
-            <form action="{{ route('question.store', $test->id) }}" method="post" id="form">
-                @csrf
-                @method('post')
-            </form>
-        </div>
-    </div>
 </div>
 
 @endsection
@@ -81,7 +84,7 @@
 @section('scripts')
 
 <script>
-    function addQuestion(){
+    function addQuestion() {
         let form = document.getElementById('form');
         let question = document.createElement('div');
         question.classList.add('question');
@@ -122,7 +125,7 @@
         form.appendChild(question);
     }
 
-    function removeQuestion(button){
+    function removeQuestion(button) {
         button.parentElement.remove();
     }
 </script>

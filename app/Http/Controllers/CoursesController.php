@@ -29,6 +29,14 @@ class CoursesController extends Controller
         return view('courses', compact('courses'));
     }
 
+    public function search(){
+        if(!request('search')){
+            return redirect('/courses');
+        }
+        $courses = Courses::where('name', 'like', '%' . request('search') . '%')->get();
+        return view('courses', compact('courses'));
+    }
+
     public function show()
     {
         $course = Courses::find(request('id'));
