@@ -113,7 +113,7 @@ class RegisterController extends Controller
 
         $lastUser = User::latest()->first();
 
-        if ($lastUser->type == 'predavac') {
+        if ($lastUser->type == 'predavac' && $lastUser->email_verified_at == null) {
             event(new Registered($lastUser));
             throw new AuthenticationException();
         }

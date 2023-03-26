@@ -37,7 +37,6 @@
                     <a href="{{ route('courses.show', $course->id) }}" class="btn btn-primary">Learn More</a>
                 </div>
                 </a>
-
             </div>
         </div>
         @endforeach

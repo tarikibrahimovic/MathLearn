@@ -11,11 +11,11 @@
         </div>
         <div class="form-group">
             <label for="name">Name</label>
-            <input type="text" name="name" id="name" class="form-control">
+            <input type="text" name="name" id="name" class="form-control" maxlength="20">
         </div>
         <div class="form-group">
             <label for="description">Description</label>
-            <input type="text" name="description" id="description" class="form-control">
+            <input type="text" name="description" id="description" class="form-control" maxlength="150">
         </div>
         <div class="form-group">
             <label for="image">Image</label>

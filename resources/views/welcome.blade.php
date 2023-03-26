@@ -86,14 +86,17 @@
         </div>
         <div class="row d-flex gap-3 flex-wrap justify-content-around my-4">
             @foreach ($courses as $course)
+            @if($loop->iteration > 3)
+            @break
+            @endif
             <div class="col-lg-3 col-md-4 d-flex align-items-stretch justify-content-center">
-                <div class="card">
+                <div class="card col-10">
                     <img src="{{$course->image}}" class="card-img-top" alt="..." style="width: full; height:75px; object-fit:cover;">
                     <div class="card-body">
                         <h5 class="card-title">{{$course->name}}</h5>
                         <p class="card-text">{{$course->description}}</p>
-                        <a href="{{ route('courses.show', $course->id) }}" class="btn btn-primary">Learn More</a>
                     </div>
+                    <a href="{{ route('courses.show', $course->id) }}" class="btn btn-primary col-6 m-2">Learn More</a>
                 </div>
             </div>
             @endforeach

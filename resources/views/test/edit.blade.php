@@ -4,8 +4,10 @@
 
 <div class="container">
 
-    <button onclick="window.history.back()" class="btn btn-primary my-3">
-        < Go Back</button>
+
+        <a href="{{ route('courses.show', $test->courses_id) }}" class="btn btn-primary my-3">
+        < Go Back
+        </a>
 
             @if(Session('message'))
             <div class="alert alert-success">
@@ -91,23 +93,23 @@
         question.innerHTML = `
         <div class="row">
             <label for="question">Question</label>
-            <input type="text" name="questions[]" id="question" class="form-control" required>
+            <input type="text" name="questions[]" id="question" class="form-control" required maxlength="60">
         </div>
         <div class="row">
             <label for="answer">Answer 1</label>
-            <input type="text" name="answers[]" id="answer" class="form-control" required>
+            <input type="text" name="answers[]" id="answer" class="form-control" required maxlength="60">
         </div>
         <div class="row">
             <label for="answer">Answer 2</label>
-            <input type="text" name="answers[]" id="answer" class="form-control" required>
+            <input type="text" name="answers[]" id="answer" class="form-control" required maxlength="60">
         </div>
         <div class="row">
             <label for="answer">Answer 3</label>
-            <input type="text" name="answers[]" id="answer" class="form-control" required>
+            <input type="text" name="answers[]" id="answer" class="form-control" required maxlength="60">
         </div>
         <div class="row">
             <label for="answer">Answer 4</label>
-            <input type="text" name="answers[]" id="answer" class="form-control" required>
+            <input type="text" name="answers[]" id="answer" class="form-control" required maxlength="2600"> 
         </div>
         <div class="row">
         <label for="correct">Correct Answer</label>

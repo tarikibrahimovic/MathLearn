@@ -63,6 +63,23 @@ class User extends Authenticatable implements MustVerifyEmail
         return false;
     }
 
+    public function isVerified(){
+        $user = User::find(auth()->user()->jmbg);
+        if ($user->approved == 1 && $user->active == 1 && $user->email_verified_at != null){
+            return true;
+        }
+        return false;
+    }
+
+    public function isPredavac()
+    {
+        $user = User::find(auth()->user()->jmbg);
+        if ($user->type == "predavac"){
+            return true;
+        }
+        return false;
+    }
+
     public function isType($role)
     {
         return $this->type == $role;
@@ -112,6 +129,11 @@ class User extends Authenticatable implements MustVerifyEmail
     public function results()
     {
         return $this->hasMany(Result::class, 'user_id', 'jmbg');
+    }
+
+    public function answers()
+    {
+        return $this->hasMany(AnswersUser::class, 'user_id', 'jmbg');
     }
 
 }

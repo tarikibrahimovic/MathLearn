@@ -88,6 +88,8 @@
 
                                 <th scope="col">Image</th>
 
+                                <th scope="col">Status</th>
+                                
                                 <th scope="col">Action</th>
 
                             </tr>
@@ -109,6 +111,12 @@
 
                                     <img src="{{$follow->course->image}}" alt="course" style="width: 75px; height:75px; object-fit:cover; border-radius: 50%;">
 
+                                </td>
+
+                                <td class="align-middle">
+                                    
+                                    {{$user->results->whereIn('test_id', $follow->course->test->pluck('id'))->count() > 0 ? 'Completed' : 'In progress'}}
+                                    
                                 </td>
 
                                 <td class="align-middle">

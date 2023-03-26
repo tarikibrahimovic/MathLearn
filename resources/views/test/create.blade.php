@@ -4,10 +4,15 @@
 
 <div class="container">
 
-    <button onclick="window.history.back()" class="btn btn-primary my-3">
-        < Go Back</button>
+    <a href="{{route('courses.show', $course->id)}}" class="btn btn-primary my-3">
+        < Go Back</a>
 
             <h1>Create a Test</h1>
+
+            <div class="alert alert-success">
+                This test is not going to show to the users if it does not have at least 1 question.
+                Maximum this test can have is 10 questions.
+            </div>
 
             <form action="{{ route('test.store', $course->id) }}" method="post" id="form">
 
@@ -15,7 +20,7 @@
                 @method('post')
                 <div class="row">
                     <label for="name">Test name</label>
-                    <input type="text" name="name" id="name" class="form-control" required>
+                    <input type="text" name="name" id="name" class="form-control" required maxlength="20">
                 </div>
 
                 <div class="row">
@@ -40,29 +45,29 @@
 
 <script>
     function addQuestion() {
-        let form = document.getElementById('form');
-        let question = document.getElementById('question');
+        let div = document.getElementById('question');
+        let question = document.createElement('div');
         question.classList.add('question');
         question.innerHTML = `
         <div class="row">
             <label for="question">Question</label>
-            <input type="text" name="questions[]" id="question" class="form-control" required>
+            <input type="text" name="questions[]" id="question" class="form-control" required maxlength="60">
         </div>
         <div class="row">
             <label for="answer">Answer 1</label>
-            <input type="text" name="answers[]" id="answer" class="form-control" required>
+            <input type="text" name="answers[]" id="answer" class="form-control" required maxlength="60">
         </div>
         <div class="row">
             <label for="answer">Answer 2</label>
-            <input type="text" name="answers[]" id="answer" class="form-control" required>
+            <input type="text" name="answers[]" id="answer" class="form-control" required maxlength="60">
         </div>
         <div class="row">
             <label for="answer">Answer 3</label>
-            <input type="text" name="answers[]" id="answer" class="form-control" required>
+            <input type="text" name="answers[]" id="answer" class="form-control" required maxlength="60">
         </div>
         <div class="row">
             <label for="answer">Answer 4</label>
-            <input type="text" name="answers[]" id="answer" class="form-control" required>
+            <input type="text" name="answers[]" id="answer" class="form-control" required maxlength="60">
         </div>
         <div class="row">
             <label for="correct">Correct Answer</label>
@@ -76,7 +81,7 @@
         <button class="btn btn-danger my-3" onclick="removeQuestion(this)">Remove Question</button>
         `;
 
-        // form.appendChild(question);
+        div.appendChild(question);
     }
 
     function removeQuestion(element) {

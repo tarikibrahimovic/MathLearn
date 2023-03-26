@@ -19,9 +19,7 @@
                         <th scope="col">Name</th>
                         <th scope="col">Surname</th>
                         <th scope="col">Email</th>
-                        <th scope="col">Score</th>
-                        <th scope="col">Test Name</th>
-                        <th scope="col">Test Hardness</th>
+                        <th scope="col">Status</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -30,9 +28,17 @@
                         <td>{{$user->name}}</td>
                         <td>{{$user->surname}}</td>
                         <td>{{$user->email}}</td>
-                        <td>{{$user->score}}</td>
-                        <td>{{$user->testName}}</td>
-                        <td>{{$user->hardness == 1 ? "Easy" : ($user->hardness == 2 ? "Medium" : "Hard")}}</td>
+                        @if($user->status == 'Finished')
+                        <td>
+                            <a href="{{ route('test.showResults', [$user->id, $user->test_id]) }}" class="text-decoration-none text-black">
+                                {{$user->status}}
+                            </a>
+                        </td>
+                        @else
+                        <td>
+                            {{$user->status}}
+                        </td>
+                        @endif
                     </tr>
                     @endforeach
                 </tbody>

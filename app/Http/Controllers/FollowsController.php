@@ -14,8 +14,9 @@ class FollowsController extends Controller
 {
     //
 
-    public function store(int $course_id){
-        if (auth()->guest()) {
+    public function store(int $course_id)
+    {
+        if (auth()->guest() || auth()->user()->isVerified() == false) {
             return redirect()->route('login');
         }
 
@@ -29,8 +30,9 @@ class FollowsController extends Controller
         return redirect()->back()->with('message', 'You are now following this course');
     }
 
-    public function destroy(int $course_id){
-        if (auth()->guest()) {
+    public function destroy(int $course_id)
+    {
+        if (auth()->guest() || auth()->user()->isVerified() == false) {
             return redirect()->route('login');
         }
 
@@ -41,37 +43,51 @@ class FollowsController extends Controller
         return redirect()->back()->with('message', 'You are no longer following this course');
     }
 
-    public function show(int $course_id){
+    public function show(int $course_id)
+    {
+        if (auth()->guest() || auth()->user()->isVerified() == false) {
+            return redirect()->route('login');
+        }
 
         $user = User::find(auth()->user()->jmbg);
 
-        if($user->isTeacher($course_id) == false){
+        if ($user->isTeacher($course_id) == false) {
             return redirect()->back();
         }
 
         $courseTests = Test::where('courses_id', $course_id)->get();
 
         $followers = CoursesUser::where('courses_id', $course_id)->get();
-        
-        if($followers->count() == 0){
+
+        if ($followers->count() == 0) {
             return redirect()->back()->with('message', 'No one is following this course');
         }
         $courseResults = [];
 
         $users = new Collection();
-        if($followers->count() == 0){
+        if ($followers->count() == 0) {
             return redirect()->back()->with('message', 'No one is following this course');
         }
-        foreach($followers as $follower){
-            $courseResults[$follower->user->jmbg] = $follower->user->results->whereIn('test_id', $courseTests->pluck('id')->toArray())->first()->score;
-            $users->push((object)[
-                'name' => $follower->user->name,
-                'surname' => $follower->user->surname,
-                'email' => $follower->user->email,
-                'score' => $courseResults[$follower->user->jmbg],
-                'hardness' => $follower->user->results->whereIn('test_id', $courseTests->pluck('id')->toArray())->first()->test->first()->hardness,
-                'testName' => $follower->user->results->whereIn('test_id', $courseTests->pluck('id')->toArray())->first()->test->first()->name,
-            ]);
+        foreach ($followers as $follower) {
+            $courseResults[$follower->user->jmbg] = $follower->user->results->whereIn('test_id', $courseTests->pluck('id')->toArray())->first()->score ?? 0;
+            if ($courseResults[$follower->user->jmbg] == 0)
+                $users->push((object)[
+                    'id' => $follower->user->jmbg,
+                    'name' => $follower->user->name,
+                    'surname' => $follower->user->surname,
+                    'email' => $follower->user->email,
+                    'status' => "Not finished",
+                    'test_id' => null,
+                ]);
+            else
+                $users->push((object)[
+                    'id' => $follower->user->jmbg,
+                    'name' => $follower->user->name,
+                    'surname' => $follower->user->surname,
+                    'email' => $follower->user->email,
+                    'status' => "Finished",
+                    'test_id' => $follower->user->results->whereIn('test_id', $courseTests->pluck('id')->toArray())->first()->test_id,
+                ]);
         }
 
         return view('courses.showUsers', compact('users'));

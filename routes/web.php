@@ -50,15 +50,16 @@ Route::middleware(['type:predavac'])->group(function () {
     Route::post('/teacher/test/store/{id}', [App\Http\Controllers\TestController::class, 'store'])->name('test.store');
     Route::get('/teacher/test/{id}/edit', [App\Http\Controllers\TestController::class, 'edit'])->name('test.edit');
     Route::delete('/teacher/test/{id}', [App\Http\Controllers\TestController::class, 'destroy'])->name('test.destroy');
-    
+    Route::get('/teacher/test/{user_id}/results/{test_id}', [App\Http\Controllers\TestController::class, 'showResults'])->name('test.showResults');
+
     Route::delete('/teacher/question/{id}', [App\Http\Controllers\TestController::class, 'destroyQuestions'])->name('question.destroy');
     Route::post('/teacher/question/store/{id}', [App\Http\Controllers\TestController::class, 'storeQuestion'])->name('question.store');
 });
 
-Route::middleware(['type:korisnik'])->group(function (){
+// Route::middleware(['type:korisnik'])->group(function (){
     Route::post('/follow/{id}', [App\Http\Controllers\FollowsController::class, 'store'])->name('follows.store');
     Route::delete('/follow/{id}', [App\Http\Controllers\FollowsController::class, 'destroy'])->name('follows.destroy');
-});
+// });
 
 
 Route::get('/menu', [App\Http\Controllers\UserController::class, 'index'])->name('user.index');
@@ -75,3 +76,4 @@ Route::get('/teacher/test/{id}', [App\Http\Controllers\TestController::class, 's
 Route::post('/teacher/test/check/{id}', [App\Http\Controllers\TestController::class, 'check'])->name('test.check');
 Route::get('/teacher/test/results/{id}', [App\Http\Controllers\TestController::class, 'results'])->name('test.results');
 Route::get('/courses', [App\Http\Controllers\CoursesController::class, 'index'])->name('courses.index');
+Route::get('/menu/test/results/{id}', [App\Http\Controllers\TestController::class, 'userResults'])->name('test.userResults');

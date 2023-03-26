@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Session;
 use App\Models\Courses;
 use App\Models\Question;
 use App\Models\Answer;
+use App\Models\AnswersUser;
 use App\Models\LessonsUser;
 use App\Models\Result;
 use Termwind\Components\Dd;
@@ -18,11 +19,17 @@ class TestController extends Controller
 
     public function create(int $course_id)
     {
+        if (auth()->guest() || auth()->user()->isVerified() == false) {
+            return redirect()->route('login');
+        }
         $course = Courses::find($course_id);
         return view('test.create', compact('course'));
     }
 
     public function storeQuestion(int $test_id){
+        if (auth()->guest() || auth()->user()->isVerified() == false) {
+            return redirect()->route('login');
+        }
 
         if (request()->has('questions') && request()->has('answers') && request()->has('correct')) {
 
@@ -51,6 +58,9 @@ class TestController extends Controller
 
     public function store(int $course_id)
     {
+        if (auth()->guest() || auth()->user()->isVerified() == false) {
+            return redirect()->route('login');
+        }
 
         if (request()->has('questions') && request()->has('answers') && request()->has('correct')) {
             $data = request()->validate([
@@ -89,6 +99,9 @@ class TestController extends Controller
 
     public function show(int $test_id)
     {
+        if (auth()->guest() || auth()->user()->isVerified() == false) {
+            return redirect()->route('login');
+        }
         $test = Test::find($test_id);
         $course = Courses::find($test->courses_id);
         $courseLessons = $course->lesson->pluck('id');
@@ -118,6 +131,9 @@ class TestController extends Controller
     public function edit(int $test_id)
     {
         $test = Test::find($test_id);
+        if (auth()->guest() || auth()->user()->isVerified() == false || auth()->user()->isTeacher($test->courses_id) == false) {
+            return redirect()->route('login');
+        }
         return view('test.edit', compact('test'));
     }
 
@@ -146,11 +162,16 @@ class TestController extends Controller
         $userAnswers = collect(request('answers'));
 
         $helpNumber = request('helpNumber');
+
         
         $correct = 0;
         $wrong = 0;
         $notAnswered = 0;
         for($i = 0; $i < $correctAnswers->count(); $i++){
+            AnswersUser::create([
+                'user_id' => auth()->user()->jmbg,
+                'answer_id' => $userAnswers[$i]??0,
+            ]);
             if($correctAnswers[$i] == ($userAnswers[$i]??false)){
                 $correct++;
             }else if($userAnswers[$i]??false){
@@ -160,15 +181,44 @@ class TestController extends Controller
             }
         }
 
+
+
         $overallScore = ($correct * 2) - $helpNumber;
 
         $result = Result::where('user_id', auth()->user()->jmbg)->where('test_id', request('id'))->first();
         $result->score = $overallScore;
         $result->helps = $helpNumber;
         $result->save();
-
         return view('test.result', compact('test', 'questions', 'userAnswers', 'correctAnswers', 'result'));
 
+    }
+
+    public function showResults(int $user_id, int $test_id){
+        $test = Test::find($test_id);
+        $questions = $test->questions;
+        $answers = $questions->map(function($question){
+            return $question->answers;
+        });
+        $userAnswers = AnswersUser::whereIn('answer_id', $answers->flatten()->pluck('id'))->where('user_id', $user_id)->get()->pluck('answer_id');
+        $correctAnswers = $questions->map(function($question){
+            return $question->answers->where('is_correct', true)->first()->id;
+        });
+        $result = Result::where('user_id', $user_id)->where('test_id', $test_id)->first();
+        return view('test.result', compact('test', 'questions', 'userAnswers', 'correctAnswers', 'result'));
+    }
+
+    public function userResults(int $test_id){
+        $test = Test::find($test_id);
+        $questions = $test->questions;
+        $answers = $questions->map(function($question){
+            return $question->answers;
+        });
+        $userAnswers = AnswersUser::whereIn('answer_id', $answers->flatten()->pluck('id'))->where('user_id', auth()->user()->jmbg)->get()->pluck('answer_id');
+        $correctAnswers = $questions->map(function($question){
+            return $question->answers->where('is_correct', true)->first()->id;
+        });
+        $result = Result::where('user_id', auth()->user()->jmbg)->where('test_id', $test_id)->first();
+        return view('test.result', compact('test', 'questions', 'userAnswers', 'correctAnswers', 'result'));
     }
 
     public function result(int $test_id){

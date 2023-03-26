@@ -8,7 +8,10 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'ProLearn | Learn to Code Today') }}</title>
+    <!-- logo -->
+    <link rel="shortcut icon" href="{{ asset('images/ProLearnLogo.png') }}" type="image/x-icon">
+
+    <title> {{ config('app.name', 'ProLearn | Learn to Code Today') }}</title>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -37,14 +40,17 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav me-auto">
                         <li class="nav-item">
-                            <!-- <a class="nav-link" href="{{ route('home') }}">{{ __('Home') }}</a> -->
-                            <!-- when a tag clicked it will go to the welcome page -->
                             <a class="nav-link" href="{{ url('/') }}">{{ __('Home') }}</a>
                             
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('courses.index') }}">{{ __('Courses') }}</a>
                         </li>
+                        @if(Auth::check() && Auth::user()->type == 'predavac')
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('teacher.index') }}">{{ __('Teacher') }}</a>
+                        </li>
+                        @endif
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -69,6 +75,7 @@
                             </a>
 
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+
                                 <a class="dropdown-item" href="{{ route('user.index') }}">
                                     {{ __('Profile') }}
                                 </a>

@@ -20,6 +20,9 @@ class CoursesController extends Controller
 
     public function create()
     {
+        if (auth()->guest() || auth()->user()->isVerified() == false) {
+            return redirect()->route('login');
+        }
         return view('courses.create');
     }
 

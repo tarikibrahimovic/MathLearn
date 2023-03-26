@@ -3,7 +3,9 @@
 @section('content')
 <div class="container">
 
-<button onclick="window.history.back()" class="btn btn-primary my-3"> < Go Back</button>
+<a href="{{ route('teacher.index') }}" class="btn btn-primary my-3">
+        < Go Back
+        </a>
 
     <div class="d-flex my-3 align-items-center flex-wrap">
         <div class="d-flex gap-3 align-items-center col-6">
@@ -51,7 +53,7 @@
 
     <div class="row">
         <div class="col-md-8">
-            <h3>{{$course->description}}</h3>
+            <p>{{$course->description}}</p>
         </div>
         <div class="col-md-7">
             <h3>Course Status: <b class="{{ $course->status == 1 ? 'text-success': 'text-danger' }}">{{$course->status == 1 ? 'Active': 'Closed'}}</b></h3>
@@ -64,6 +66,12 @@
                 </h3>
             </a>
         </div>
+        @if($user->results->whereIn('test_id', $course->test->pluck('id'))->count() > 0)
+        <div class="col-md-12">
+            <h3 class="text-success">You have passed this course!</h3>
+            <a href="{{ route('test.userResults', $user->results->whereIn('test_id', $course->test->pluck('id'))->first()->test_id) }}" class="btn btn-primary mb-3">See results</a>
+        </div>
+        @endif
     </div>
 
     @if($user->isTeacher($course->id) == false)
@@ -101,7 +109,7 @@
                 @endif
 
             </div>
-            <ul class="mb-5">
+            <ul class="mb-3 row">
 
                 @foreach($course->lesson as $lesson)
                 <li class="d-flex align-items-center gap-4">
@@ -136,7 +144,7 @@
 
                 <li>
                     <div class="row">
-                        <a href="{{ route('test.show', $test->id) }}" class="col-2">{{$test->name}}</a>
+                        <a href="{{ route('test.show', $test->id) }}" class="col-2"> {{$test->hardness == 1 ? 'Easy: ' : ($test->hardness == 2 ? 'Medium: ' : 'Hard: ')}} {{$test->name}}</a>
                         @if($user->isTeacher($course->id) == true)
                         <form action="{{route('test.edit', $test->id)}}" method="get">
                             @csrf

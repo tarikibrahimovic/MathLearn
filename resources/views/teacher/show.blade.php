@@ -48,7 +48,7 @@
                                             <img src="{{$course->image}}" alt="course" style="width: 150px; height:150px; object-fit:cover; border-radius: 50%;">
                                         </div>
                                         <div class="d-flex justify-content-center">
-                                            <h3>{{$course->description}}</h3>
+                                            <p>{{$course->description}}</p>
                                         </div>
                                         <div class="d-flex justify-content-center">
                                             <h5>{{explode(" ", $course->created_at)[0]}}</h5>
