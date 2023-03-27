@@ -56,10 +56,8 @@ Route::middleware(['type:predavac'])->group(function () {
     Route::post('/teacher/question/store/{id}', [App\Http\Controllers\TestController::class, 'storeQuestion'])->name('question.store');
 });
 
-// Route::middleware(['type:korisnik'])->group(function (){
     Route::post('/follow/{id}', [App\Http\Controllers\FollowsController::class, 'store'])->name('follows.store');
     Route::delete('/follow/{id}', [App\Http\Controllers\FollowsController::class, 'destroy'])->name('follows.destroy');
-// });
 
 
 Route::get('/menu', [App\Http\Controllers\UserController::class, 'index'])->name('user.index');

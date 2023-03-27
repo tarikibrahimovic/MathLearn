@@ -152,9 +152,8 @@ class TestController extends Controller
 
     public function check(){
 
-        $test = Test::find(request('id'));
+        $test = Test::findOrfail(request('id'));
         $questions = $test->questions;
-
         $correctAnswers = $questions->map(function($question){
             return $question->answers->where('is_correct', true)->first()->id;
         });
@@ -163,6 +162,9 @@ class TestController extends Controller
 
         $helpNumber = request('helpNumber');
 
+        $answers = $test->questions->map(function($question){
+            return $question->answers;
+        });
         
         $correct = 0;
         $wrong = 0;
@@ -170,7 +172,7 @@ class TestController extends Controller
         for($i = 0; $i < $correctAnswers->count(); $i++){
             AnswersUser::create([
                 'user_id' => auth()->user()->jmbg,
-                'answer_id' => $userAnswers[$i]??0,
+                'answer_id' => $userAnswers[$i]??false,
             ]);
             if($correctAnswers[$i] == ($userAnswers[$i]??false)){
                 $correct++;
@@ -180,8 +182,6 @@ class TestController extends Controller
                 $wrong++;
             }
         }
-
-
 
         $overallScore = ($correct * 2) - $helpNumber;
 
@@ -194,31 +194,53 @@ class TestController extends Controller
     }
 
     public function showResults(int $user_id, int $test_id){
-        $test = Test::find($test_id);
-        $questions = $test->questions;
-        $answers = $questions->map(function($question){
-            return $question->answers;
-        });
-        $userAnswers = AnswersUser::whereIn('answer_id', $answers->flatten()->pluck('id'))->where('user_id', $user_id)->get()->pluck('answer_id');
-        $correctAnswers = $questions->map(function($question){
-            return $question->answers->where('is_correct', true)->first()->id;
-        });
-        $result = Result::where('user_id', $user_id)->where('test_id', $test_id)->first();
-        return view('test.result', compact('test', 'questions', 'userAnswers', 'correctAnswers', 'result'));
+        try{
+            $test = Test::findOrfail($test_id);
+            $questions = $test->questions;
+            $questions = $questions->filter(function($question) use ($user_id){
+                return $question->created_at < Result::where('user_id', $user_id)->where('test_id', $question->tests_id)->first()->created_at;
+            });
+            $answers = $questions->map(function($question){
+                return $question->answers;
+            });
+            $userAnswers = AnswersUser::whereIn('answer_id', $answers->flatten()->pluck('id'))->where('user_id', $user_id)->get()->pluck('answer_id');
+            $correctAnswers = $answers->map(function($answer){
+                return $answer->where('is_correct', true)->first()->id;
+            });
+            $result = Result::where('user_id', $user_id)->where('test_id', $test_id)->first();
+            return view('test.result', compact('test', 'questions', 'userAnswers', 'correctAnswers', 'result'));
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('message', 'Test or some of the questions are deleted!');
+        }
     }
 
     public function userResults(int $test_id){
-        $test = Test::find($test_id);
-        $questions = $test->questions;
-        $answers = $questions->map(function($question){
-            return $question->answers;
-        });
-        $userAnswers = AnswersUser::whereIn('answer_id', $answers->flatten()->pluck('id'))->where('user_id', auth()->user()->jmbg)->get()->pluck('answer_id');
-        $correctAnswers = $questions->map(function($question){
-            return $question->answers->where('is_correct', true)->first()->id;
-        });
-        $result = Result::where('user_id', auth()->user()->jmbg)->where('test_id', $test_id)->first();
-        return view('test.result', compact('test', 'questions', 'userAnswers', 'correctAnswers', 'result'));
+        try{
+            $test = Test::findOrfail($test_id);
+            $questions = $test->questions;
+            $questions = $questions->filter(function($question){
+                return $question->created_at < Result::where('user_id', auth()->user()->jmbg)->where('test_id', $question->tests_id)->first()->created_at;
+            });
+            $answers = $questions->map(function($question){
+                return $question->answers;
+            });
+            $userAnswers = AnswersUser::where('user_id', auth()->user()->jmbg)->get()->pluck('answer_id');
+            $userAnswers = $userAnswers->filter(function($answer) use ($answers){
+                return $answers->flatten()->pluck('id')->contains($answer);
+            });
+            if($userAnswers->count() == 0){
+                return redirect()->back()->with('error', 'You did not answer on any of the questions! You score is 0!');
+            }
+            $correctAnswers = $answers->map(function($answer){
+                return $answer->where('is_correct', true)->first()->id;
+            });
+            $result = Result::where('user_id', auth()->user()->jmbg)->where('test_id', $test_id)->first();
+            return view('test.result', compact('test', 'questions', 'userAnswers', 'correctAnswers', 'result'));
+        }
+        catch(\Exception $e){
+            return redirect()->back()->with('message', 'Test or some of the questions are deleted!');
+        }
     }
 
     public function result(int $test_id){

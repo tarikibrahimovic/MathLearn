@@ -16,7 +16,7 @@
             @csrf
             @method('post')
             <input type="number" class="d-none" name="helpNumber" value="0">
-            @for($i = 0; $i < $test->questions()->count(); $i++)
+            @for($i = 0; $i < $test->questions->count(); $i++)
             <div class="col-md-12 mb-3">
                 <div class="card">
                     <div class="card-header">
@@ -25,7 +25,7 @@
                     <div class="card-body d-flex flex-column" id="section{{$i}}">
                         @for($j = 0; $j < $test->questions[$i]->answers()->count(); $j++)
                         <div class="d-flex align-items-center">
-                            <input type="radio" name="answers[{{$i}}]" value="{{ $test->questions[$i]->answers[$j]->id }}" id="answer{{$i}}{{$j}}" class="m-2 {{$test->questions[$i]->answers[$j]->is_correct == true ? true : false}}">
+                            <input type="radio" name="answers[{{$i}}]" value="{{ $test->questions[$i]->answers[$j]->id }}" id="answer{{$i}}{{$j}}" class="m-2 {{$test->questions[$i]->answers[$j]->is_correct == true ? true : false}}" required>
                             <label for="answer{{$i}}{{$j}}">{{ $test->questions[$i]->answers[$j]->answer }}</label>
                         </div>
                         @endfor

@@ -63,7 +63,7 @@
                             </ul>
                         </div>
                         <div class="col-md-12">
-                            <form action="{{ route('question.destroy', $test->questions[0]->id) }}" method="post">
+                            <form action="{{ route('question.destroy', $question->id) }}" method="post">
                                 @csrf
                                 @method('delete')
                                 <button class="btn btn-danger mb-3">Delete Question</button>
@@ -93,7 +93,7 @@
         question.innerHTML = `
         <div class="row">
             <label for="question">Question</label>
-            <input type="text" name="questions[]" id="question" class="form-control" required maxlength="60">
+            <input type="text" name="questions[]" id="question" class="form-control" required maxlength="80">
         </div>
         <div class="row">
             <label for="answer">Answer 1</label>

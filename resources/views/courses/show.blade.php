@@ -48,6 +48,10 @@
     <div class="alert alert-success">
         {{Session('message')}}
     </div>
+    @elseif(Session('error'))
+    <div class="alert alert-danger">
+        {{Session('error')}}
+    </div>
     @endif
 
 
@@ -112,7 +116,7 @@
             <ul class="mb-3 row">
 
                 @foreach($course->lesson as $lesson)
-                <li class="d-flex align-items-center gap-4">
+                <li>
                     <a href="{{ route('lessons.download', $lesson->id) }}" class="col-1">{{ $lesson->name }}</a>
                     @if($user->isTeacher($course->id) == true)
 

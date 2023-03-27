@@ -51,7 +51,7 @@
         question.innerHTML = `
         <div class="row">
             <label for="question">Question</label>
-            <input type="text" name="questions[]" id="question" class="form-control" required maxlength="60">
+            <input type="text" name="questions[]" id="question" class="form-control" required maxlength="80">
         </div>
         <div class="row">
             <label for="answer">Answer 1</label>

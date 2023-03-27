@@ -16,31 +16,42 @@ class FollowsController extends Controller
 
     public function store(int $course_id)
     {
-        if (auth()->guest() || auth()->user()->isVerified() == false) {
-            return redirect()->route('login');
+        try{
+            if (auth()->guest() || auth()->user()->isVerified() == false) {
+                return redirect()->route('login');
+            }
+    
+            $user = User::findOrFail(auth()->user()->jmbg);
+        
+    
+            CoursesUser::create([
+                'user_jmbg' => $user->jmbg,
+                'courses_id' => $course_id
+            ]);
+    
+            return redirect()->back()->with('message', 'You are now following this course');
         }
-
-        $user = User::find(auth()->user()->jmbg);
-
-        CoursesUser::create([
-            'user_jmbg' => $user->jmbg,
-            'courses_id' => $course_id
-        ]);
-
-        return redirect()->back()->with('message', 'You are now following this course');
+        catch(\Exception $e){
+            return redirect()->back()->with('message', 'You are already following this course');
+        }
     }
 
     public function destroy(int $course_id)
     {
-        if (auth()->guest() || auth()->user()->isVerified() == false) {
-            return redirect()->route('login');
+        try{
+            if (auth()->guest() || auth()->user()->isVerified() == false) {
+                return redirect()->route('login');
+            }
+    
+            $user = User::findOrFail(auth()->user()->jmbg);
+    
+            $follows = CoursesUser::where('user_jmbg', $user->jmbg)->where('courses_id', $course_id)->first();
+            $follows->delete();
+            return redirect()->back()->with('message', 'You are no longer following this course');
         }
-
-        $user = User::find(auth()->user()->jmbg);
-
-        $follows = CoursesUser::where('user_jmbg', $user->jmbg)->where('courses_id', $course_id)->first();
-        $follows->delete();
-        return redirect()->back()->with('message', 'You are no longer following this course');
+        catch(\Exception $e){
+            return redirect()->back()->with('message', 'You are not following this course');
+        }
     }
 
     public function show(int $course_id)
@@ -49,7 +60,7 @@ class FollowsController extends Controller
             return redirect()->route('login');
         }
 
-        $user = User::find(auth()->user()->jmbg);
+        $user = User::findOrFail(auth()->user()->jmbg);
 
         if ($user->isTeacher($course_id) == false) {
             return redirect()->back();
